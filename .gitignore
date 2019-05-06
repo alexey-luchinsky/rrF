@@ -1,0 +1,8 @@
+*.root
+*.exe
+*.dec
+data/
+*.sh
+.ipynb_checkpoints/
+compare.ipynb
+kks_main.cpp
