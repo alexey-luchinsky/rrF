@@ -82,11 +82,16 @@ void init_input_fields(TTree *ntp) {
 
 void read_event(TNtuple *tup, int iEv, string vars_) {
     const char *c = vars_.c_str();
-    int i1 = c[0] - '0', i2 = c[1] - '0';
-    TLorentzVector p1(fPx[i1], fPy[i1], fPz[i1], fE[i1]);
-    TLorentzVector p2(fPx[i2], fPy[i2], fPz[i2], fE[i2]);
-    double m2 = (p1 + p2).Mag2();
-    tup->Fill(m2);
+    if(c[0]=='m' && c[1]=='^' && c[2]=='2' && c[3]=='_') {
+        int i1 = c[0] - '0', i2 = c[1] - '0';
+        TLorentzVector p1(fPx[i1], fPy[i1], fPz[i1], fE[i1]);
+        TLorentzVector p2(fPx[i2], fPy[i2], fPz[i2], fE[i2]);
+        double m2 = (p1 + p2).Mag2();
+        tup->Fill(m2);
+    }
+    else {
+        cout<<"unknown var "<<vars_<<endl;
+    }
 }
 
 int main(int argc, char **argv) {
