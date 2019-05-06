@@ -10,6 +10,8 @@
 #include "TNtuple.h"
 #include "TH1F.h"
 #include "TLorentzVector.h"
+#include "EvtGenBase/EvtPDL.hh"
+#include "EvtGenBase/EvtId.hh"
 
 using namespace TCLAP;
 using namespace std;
@@ -31,13 +33,13 @@ void read_args(int argc, char **argv) {
         TCLAP::CmdLine cmd("Reads ROOT file", ' ', "0.1");
         ValueArg<string> inFileName_arg("i", "in", "input ROOT file", false, "evtOutput.root", "string", cmd);
         ValueArg<string> outFileName_arg("o", "out", "output ROOT file", false, "out.root", "string", cmd);
-        ValueArg<string> vars_arg("v", "var", "variable to be saved", false, "m12", "string", cmd);
+        ValueArg<string> vars_arg("v", "var", "variable to be saved", false, "12", "string", cmd);
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
         outFileName = outFileName_arg.getValue();
         vars = vars_arg.getValue();
-    }    catch (ArgException &e) {
+    } catch (ArgException &e) {
         cerr << "error: " << e.error() << " at arg=" << e.argId() << endl;
     };
 
@@ -79,7 +81,8 @@ void init_input_fields(TTree *ntp) {
 }
 
 void read_event(TNtuple *tup, int iEv, string vars_) {
-    int i1 = 1, i2 = 2;
+    const char *c = vars_.c_str();
+    int i1 = c[0] - '0', i2 = c[1] - '0';
     TLorentzVector p1(fPx[i1], fPy[i1], fPz[i1], fE[i1]);
     TLorentzVector p2(fPx[i2], fPy[i2], fPz[i2], fE[i2]);
     double m2 = (p1 + p2).Mag2();
@@ -96,11 +99,21 @@ int main(int argc, char **argv) {
     int nEv = ntp->GetEntries();
     init_input_fields(ntp);
 
+//    EvtPDL pdl;
+//    pdl.read("evt.pdl");
+//    const char *c = vars.c_str();
+//    int i1 = c[0] - '0', i2 = c[1] - '0';
+//    ntp->GetEvent(0);
+//    EvtId id1 = EvtPDL::evtIdFromLundKC(pdgID[i1]);
+//    EvtId id2 = EvtPDL::evtIdFromLundKC(pdgID[i2]);
+//    cout << " id1=" << EvtPDL::name(id1) << " id2=" << EvtPDL::name(id2) << endl;
+
+
     TNtuple *tup = new TNtuple("tup", "tup", "m2");
-    
+
     for (int iEv = 0; iEv < nEv; ++iEv) {
         ntp->GetEvent(iEv);
-        if(iEv % (nEv/10) == 0) cout << " iEv=" << iEv << endl;
+        if (iEv % (nEv / 10) == 0) cout << " iEv=" << iEv << endl;
         read_event(tup, iEv, vars);
     };
     tup->Fill(1);
