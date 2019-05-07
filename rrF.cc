@@ -90,6 +90,14 @@ float calc_var(string var) {
             P += _p;
         }
         return P.M2();
+    } else if (var.substr(0, 2) == "m_") {
+        TLorentzVector P, _p;
+        for (int i = 2; i < var.length(); ++i) {
+            int ind = var[i] - '0';
+            _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
+            P += _p;
+        }
+        return P.M();
     } else {
         cout << "Unknown variable " << var << endl;
         ::abort();
