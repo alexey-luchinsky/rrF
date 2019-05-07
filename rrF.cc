@@ -80,15 +80,23 @@ void init_input_fields(TTree *ntp) {
     ntp->SetBranchAddress("tht", fTht);
 }
 
-void read_event(TNtuple *tup, int iEv, string vars_) {
-    TLorentzVector P, _p;
-    for (int i = 3; i < vars.length(); ++i) {
-        int ind = vars[i] - '0';
-        _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
-        P += _p;
+double calc_var(string var) {
+    if (var.substr(0, 3) == "m2_") {
+        TLorentzVector P, _p;
+        for (int i = 3; i < var.length(); ++i) {
+            int ind = var[i] - '0';
+            _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
+            P += _p;
+        }
+        return P.M2();
+    } else {
+        cout << "Unknown variable " << var << endl;
+        ::abort();
     }
-    double m2 = P.M2();
-    tup->Fill(m2);
+}
+
+void read_event(TNtuple *tup, int iEv, string vars_) {
+    tup->Fill(calc_var(vars_));
 }
 
 int main(int argc, char **argv) {
@@ -101,16 +109,6 @@ int main(int argc, char **argv) {
     int nEv = ntp->GetEntries();
     init_input_fields(ntp);
 
-    //    EvtPDL pdl;
-    //    pdl.read("evt.pdl");
-    //    const char *c = vars.c_str();
-    //    int i1 = c[0] - '0', i2 = c[1] - '0';
-    //    ntp->GetEvent(0);
-    //    EvtId id1 = EvtPDL::evtIdFromLundKC(pdgID[i1]);
-    //    EvtId id2 = EvtPDL::evtIdFromLundKC(pdgID[i2]);
-    //    cout << " id1=" << EvtPDL::name(id1) << " id2=" << EvtPDL::name(id2) << endl;
-
-
     TNtuple *tup = new TNtuple("tup", "tup", "m2");
 
     for (int iEv = 0; iEv < nEv; ++iEv) {
@@ -118,10 +116,8 @@ int main(int argc, char **argv) {
         if (iEv % (nEv / 10) == 0) cout << " iEv=" << iEv << endl;
         read_event(tup, iEv, vars);
     };
-    tup->Fill(1);
 
     tup->Write();
-    //    out_file->Save();
     out_file->Close();
     in_file->Close();
 
