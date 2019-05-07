@@ -17,7 +17,8 @@ using namespace TCLAP;
 using namespace std;
 
 // command line parameters
-string inFileName, outFileName, vars;
+string inFileName, outFileName;
+vector<string> vars;
 
 // input file fields
 #define MAX 100
@@ -33,7 +34,7 @@ void read_args(int argc, char **argv) {
         TCLAP::CmdLine cmd("Reads ROOT file", ' ', "0.1");
         ValueArg<string> inFileName_arg("i", "in", "input ROOT file", false, "evtOutput.root", "string", cmd);
         ValueArg<string> outFileName_arg("o", "out", "output ROOT file", false, "out.root", "string", cmd);
-        ValueArg<string> vars_arg("v", "var", "variable to be saved, e.g. m2_12", false, "m2_12", "string", cmd);
+        MultiArg<string> vars_arg("v", "var", "variable to be saved, e.g. m2_12", true, "string", cmd);
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
@@ -46,7 +47,7 @@ void read_args(int argc, char **argv) {
     cout << " Running with: " << endl;
     cout << "\t inFileName=" << inFileName << endl;
     cout << "\t outFileName=" << outFileName << endl;
-    cout << "\t vars=" << vars << endl;
+    //    cout << "\t vars=" << vars << endl;
 }
 
 void init_input_fields(TTree *ntp) {
@@ -80,7 +81,7 @@ void init_input_fields(TTree *ntp) {
     ntp->SetBranchAddress("tht", fTht);
 }
 
-double calc_var(string var) {
+float calc_var(string var) {
     if (var.substr(0, 3) == "m2_") {
         TLorentzVector P, _p;
         for (int i = 3; i < var.length(); ++i) {
@@ -95,8 +96,13 @@ double calc_var(string var) {
     }
 }
 
-void read_event(TNtuple *tup, int iEv, string vars_) {
-    tup->Fill(calc_var(vars_));
+void read_event(TNtuple *tup, int iEv) {
+    vector<float> values;
+    for (int i = 0; i < vars.size(); ++i) {
+        float x = calc_var(vars[i]);
+        values.push_back(x);
+    };
+    tup->Fill( values.data() );
 }
 
 int main(int argc, char **argv) {
@@ -109,12 +115,18 @@ int main(int argc, char **argv) {
     int nEv = ntp->GetEntries();
     init_input_fields(ntp);
 
-    TNtuple *tup = new TNtuple("tup", "tup", "m2");
+    string fields = "";
+    for (int i = 0; i < vars.size(); ++i) {
+        fields += vars[i] + ":";
+    };
+    fields.pop_back();
+    cout<<" fields = \""<<fields<<"\""<<endl;
+    TNtuple *tup = new TNtuple("tup", "tup", fields.c_str());
 
     for (int iEv = 0; iEv < nEv; ++iEv) {
         ntp->GetEvent(iEv);
         if (iEv % (nEv / 10) == 0) cout << " iEv=" << iEv << endl;
-        read_event(tup, iEv, vars);
+        read_event(tup, iEv);
     };
 
     tup->Write();
