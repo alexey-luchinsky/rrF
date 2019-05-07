@@ -17,7 +17,8 @@ using namespace TCLAP;
 using namespace std;
 
 // command line parameters
-string inFileName, outFileName, vars;
+string inFileName, outFileName;
+vector<string> vars;
 
 // input file fields
 #define MAX 100
@@ -33,7 +34,7 @@ void read_args(int argc, char **argv) {
         TCLAP::CmdLine cmd("Reads ROOT file", ' ', "0.1");
         ValueArg<string> inFileName_arg("i", "in", "input ROOT file", false, "evtOutput.root", "string", cmd);
         ValueArg<string> outFileName_arg("o", "out", "output ROOT file", false, "out.root", "string", cmd);
-        ValueArg<string> vars_arg("v", "var", "variable to be saved", false, "12", "string", cmd);
+        MultiArg<string> vars_arg("v", "var", "variable to be saved, e.g. m2_12", true, "string", cmd);
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
@@ -46,7 +47,7 @@ void read_args(int argc, char **argv) {
     cout << " Running with: " << endl;
     cout << "\t inFileName=" << inFileName << endl;
     cout << "\t outFileName=" << outFileName << endl;
-    cout << "\t vars=" << vars << endl;
+    //    cout << "\t vars=" << vars << endl;
 }
 
 void init_input_fields(TTree *ntp) {
@@ -80,18 +81,36 @@ void init_input_fields(TTree *ntp) {
     ntp->SetBranchAddress("tht", fTht);
 }
 
-void read_event(TNtuple *tup, int iEv, string vars_) {
-    const char *c = vars_.c_str();
-    if(c[0]=='m' && c[1]=='^' && c[2]=='2' && c[3]=='_') {
-        int i1 = c[0] - '0', i2 = c[1] - '0';
-        TLorentzVector p1(fPx[i1], fPy[i1], fPz[i1], fE[i1]);
-        TLorentzVector p2(fPx[i2], fPy[i2], fPz[i2], fE[i2]);
-        double m2 = (p1 + p2).Mag2();
-        tup->Fill(m2);
+float calc_var(string var) {
+    if (var.substr(0, 3) == "m2_") {
+        TLorentzVector P, _p;
+        for (int i = 3; i < var.length(); ++i) {
+            int ind = var[i] - '0';
+            _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
+            P += _p;
+        }
+        return P.M2();
+    } else if (var.substr(0, 2) == "m_") {
+        TLorentzVector P, _p;
+        for (int i = 2; i < var.length(); ++i) {
+            int ind = var[i] - '0';
+            _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
+            P += _p;
+        }
+        return P.M();
+    } else {
+        cout << "Unknown variable " << var << endl;
+        ::abort();
     }
-    else {
-        cout<<"unknown var "<<vars_<<endl;
-    }
+}
+
+void read_event(TNtuple *tup, int iEv) {
+    vector<float> values;
+    for (int i = 0; i < vars.size(); ++i) {
+        float x = calc_var(vars[i]);
+        values.push_back(x);
+    };
+    tup->Fill( values.data() );
 }
 
 int main(int argc, char **argv) {
@@ -104,27 +123,21 @@ int main(int argc, char **argv) {
     int nEv = ntp->GetEntries();
     init_input_fields(ntp);
 
-//    EvtPDL pdl;
-//    pdl.read("evt.pdl");
-//    const char *c = vars.c_str();
-//    int i1 = c[0] - '0', i2 = c[1] - '0';
-//    ntp->GetEvent(0);
-//    EvtId id1 = EvtPDL::evtIdFromLundKC(pdgID[i1]);
-//    EvtId id2 = EvtPDL::evtIdFromLundKC(pdgID[i2]);
-//    cout << " id1=" << EvtPDL::name(id1) << " id2=" << EvtPDL::name(id2) << endl;
-
-
-    TNtuple *tup = new TNtuple("tup", "tup", "m2");
+    string fields = "";
+    for (int i = 0; i < vars.size(); ++i) {
+        fields += vars[i] + ":";
+    };
+    fields.pop_back();
+    cout<<" fields = \""<<fields<<"\""<<endl;
+    TNtuple *tup = new TNtuple("tup", "tup", fields.c_str());
 
     for (int iEv = 0; iEv < nEv; ++iEv) {
         ntp->GetEvent(iEv);
         if (iEv % (nEv / 10) == 0) cout << " iEv=" << iEv << endl;
-        read_event(tup, iEv, vars);
+        read_event(tup, iEv);
     };
-    tup->Fill(1);
 
     tup->Write();
-    //    out_file->Save();
     out_file->Close();
     in_file->Close();
 
