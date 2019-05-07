@@ -12,7 +12,7 @@ INC=-I ${ROOT_INCDIR}  -I../evtgen/ -I  ~/local/include/
 
 #FLAGS = `root-config --cflags`
 FLAGS = -pthread -stdlib=libc++ -std=c++11 -m64
-all: kks_main.exe simpleEvtGenRO.exe readRootFile.exe rrF.exe
+all: simpleEvtGenRO.exe rrF.exe
 
 
 %.exe: %.cpp ${LIB_EVTGEN}

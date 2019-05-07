@@ -6,6 +6,7 @@
 
 #include "tclap/CmdLine.h"
 #include <iostream>
+#include <regex>
 #include "TFile.h"
 #include "TNtuple.h"
 #include "TH1F.h"
@@ -29,6 +30,7 @@ Double_t fVx[MAX], fVy[MAX], fVz[MAX], fT[MAX];
 Double_t fTht[MAX], fM[MAX], fP[MAX], fPt[MAX];
 Int_t nTrk = 0;
 
+
 void read_args(int argc, char **argv) {
     try {
         TCLAP::CmdLine cmd("Reads ROOT file", ' ', "0.1");
@@ -39,7 +41,27 @@ void read_args(int argc, char **argv) {
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
         outFileName = outFileName_arg.getValue();
-        vars = vars_arg.getValue();
+        auto vars_ = vars_arg.getValue();
+        for (int iv = 0; iv < vars_.size(); iv++) {
+            auto v = vars_[iv];
+            if (v[0] == '[' && v[v.length() - 1] == ']') {
+                v = std::regex_replace(v, std::regex(" "),"");
+                v = std::regex_replace(v, std::regex("\\["),"");
+                v = std::regex_replace(v, std::regex("\\]"),"");
+                cout << "LIST OF ARGS" << endl;
+                string delim = ",";
+                size_t prev = 0, pos = 0;
+                do {
+                    pos = v.find(delim, prev);
+                    if (pos == string::npos) pos = v.length();
+                    auto token = v.substr(prev, pos - prev);
+                    if (!token.empty()) vars.push_back(token);
+                    prev = pos + delim.length();
+                } while (pos < v.length() && prev < v.length());
+            } else {
+                vars.push_back(v);
+            };
+        };
     } catch (ArgException &e) {
         cerr << "error: " << e.error() << " at arg=" << e.argId() << endl;
     };
@@ -47,6 +69,11 @@ void read_args(int argc, char **argv) {
     cout << " Running with: " << endl;
     cout << "\t inFileName=" << inFileName << endl;
     cout << "\t outFileName=" << outFileName << endl;
+    cout << " vars = [";
+    for (int i = 0; i < vars.size(); ++i) {
+        cout << vars[i] << " ";
+    };
+    cout << "]" << endl;
     //    cout << "\t vars=" << vars << endl;
 }
 
@@ -110,7 +137,7 @@ void read_event(TNtuple *tup, int iEv) {
         float x = calc_var(vars[i]);
         values.push_back(x);
     };
-    tup->Fill( values.data() );
+    tup->Fill(values.data());
 }
 
 int main(int argc, char **argv) {
@@ -128,7 +155,6 @@ int main(int argc, char **argv) {
         fields += vars[i] + ":";
     };
     fields.pop_back();
-    cout<<" fields = \""<<fields<<"\""<<endl;
     TNtuple *tup = new TNtuple("tup", "tup", fields.c_str());
 
     for (int iEv = 0; iEv < nEv; ++iEv) {
