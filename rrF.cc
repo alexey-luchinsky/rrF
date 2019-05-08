@@ -21,6 +21,7 @@ using namespace std;
 string inFileName, outFileName;
 vector<string> vars;
 int nev;
+bool print_ids;
 
 // input file fields
 #define MAX 100
@@ -40,10 +41,15 @@ void read_args(int argc, char **argv) {
         ValueArg<string> outFileName_arg("o", "out", "output ROOT file", false, "out.root", "string", cmd);
         MultiArg<string> vars_arg("v", "var", "variable to be saved, e.g. m2_12", true, "string", cmd);
         ValueArg<float> nev_arg("n", "nev", "Number of events to be read (negative if all events should be read)", false, -1, "float", cmd);
-
+        SwitchArg print_ids_arg("p", "print-ids", "should we print ids of the particles", false);
+        cmd.add(print_ids_arg);
+        
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
         outFileName = outFileName_arg.getValue();
+        print_ids = print_ids_arg.getValue();
+        
+        // reading the vars list
         auto vars_ = vars_arg.getValue();
         nev = (int)nev_arg.getValue();
         for (int iv = 0; iv < vars_.size(); iv++) {
@@ -78,7 +84,8 @@ void read_args(int argc, char **argv) {
         cout << vars[i] << " ";
     };
     cout << "]" << endl;
-    //    cout << "\t vars=" << vars << endl;
+    cout << " nev = "<<nev<<endl;
+    cout << " print_ids = "<< print_ids << endl;
 }
 
 void init_input_fields(TTree *ntp) {
