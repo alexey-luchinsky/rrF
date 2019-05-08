@@ -138,6 +138,10 @@ float calc_var(string var) {
         }
         return P.M();
     }
+    else if(var.substr(0, 3) == "id_") {
+        int id = var[3]-'0';
+        return pdgID[id];
+    }
     else if(var == "prob") {
         return fProb;
     } else {
