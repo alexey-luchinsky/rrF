@@ -33,7 +33,6 @@ Double_t fTht[MAX], fM[MAX], fP[MAX], fPt[MAX];
 Int_t nTrk = 0;
 Double_t fProb;
 
-
 void read_args(int argc, char **argv) {
     try {
         TCLAP::CmdLine cmd("Reads ROOT file", ' ', "0.1");
@@ -43,21 +42,21 @@ void read_args(int argc, char **argv) {
         ValueArg<float> nev_arg("n", "nev", "Number of events to be read (negative if all events should be read)", false, -1, "float", cmd);
         SwitchArg print_ids_arg("p", "print-ids", "should we print ids of the particles", false);
         cmd.add(print_ids_arg);
-        
+
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
         outFileName = outFileName_arg.getValue();
         print_ids = print_ids_arg.getValue();
-        
+
         // reading the vars list
         auto vars_ = vars_arg.getValue();
-        nev = (int)nev_arg.getValue();
+        nev = (int) nev_arg.getValue();
         for (int iv = 0; iv < vars_.size(); iv++) {
             auto v = vars_[iv];
             if (v[0] == '[' && v[v.length() - 1] == ']') {
-                v = std::regex_replace(v, std::regex(" "),"");
-                v = std::regex_replace(v, std::regex("\\["),"");
-                v = std::regex_replace(v, std::regex("\\]"),"");
+                v = std::regex_replace(v, std::regex(" "), "");
+                v = std::regex_replace(v, std::regex("\\["), "");
+                v = std::regex_replace(v, std::regex("\\]"), "");
                 cout << "LIST OF ARGS" << endl;
                 string delim = ",";
                 size_t prev = 0, pos = 0;
@@ -84,8 +83,8 @@ void read_args(int argc, char **argv) {
         cout << vars[i] << " ";
     };
     cout << "]" << endl;
-    cout << " nev = "<<nev<<endl;
-    cout << " print_ids = "<< print_ids << endl;
+    cout << " nev = " << nev << endl;
+    cout << " print_ids = " << print_ids << endl;
 }
 
 void init_input_fields(TTree *ntp) {
@@ -125,6 +124,10 @@ float calc_var(string var) {
         TLorentzVector P, _p;
         for (int i = 3; i < var.length(); ++i) {
             int ind = var[i] - '0';
+            if (ind < 0 || ind >= nTrk) {
+                cout << "wrong particle number " << ind << endl;
+                ::abort();
+            };
             _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
             P += _p;
         }
@@ -133,16 +136,22 @@ float calc_var(string var) {
         TLorentzVector P, _p;
         for (int i = 2; i < var.length(); ++i) {
             int ind = var[i] - '0';
+            if (ind < 0 || ind >= nTrk) {
+                cout << "wrong particle number " << ind << endl;
+                ::abort();
+            };
             _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
             P += _p;
         }
         return P.M();
-    }
-    else if(var.substr(0, 3) == "id_") {
-        int id = var[3]-'0';
-        return pdgID[id];
-    }
-    else if(var == "prob") {
+    } else if (var.substr(0, 3) == "id_") {
+        int ind = var[3] - '0';
+        if (ind < 0 || ind >= nTrk) {
+            cout << "wrong particle number " << ind << endl;
+            ::abort();
+        };
+        return pdgID[ind];
+    } else if (var == "prob") {
         return fProb;
     } else {
         cout << "Unknown variable " << var << endl;
@@ -161,7 +170,7 @@ void read_event(TNtuple *tup, int iEv) {
 
 int main(int argc, char **argv) {
     read_args(argc, argv);
-    
+
     EvtPDL pdl;
     pdl.read("evt.pdl");
 
@@ -171,7 +180,7 @@ int main(int argc, char **argv) {
     TTree *ntp = (TTree*) in_file->Get("ntp");
     init_input_fields(ntp);
     int nEv;
-    if(nev<0 || nev>ntp->GetEntries()) nEv=ntp->GetEntries();
+    if (nev < 0 || nev > ntp->GetEntries()) nEv = ntp->GetEntries();
     else nEv = nev;
 
     string fields = "";
@@ -185,11 +194,11 @@ int main(int argc, char **argv) {
         ntp->GetEvent(iEv);
         if (iEv % (nEv / 10) == 0) cout << " iEv=" << iEv << endl;
         read_event(tup, iEv);
-        if(print_ids) {
-            for(int id=0; id<nTrk; ++id) {
-                cout<<id<<":"<<EvtPDL::name(EvtPDL::evtIdFromLundKC(pdgID[id]))<<" ";
+        if (print_ids) {
+            for (int id = 0; id < nTrk; ++id) {
+                cout << id << ":" << EvtPDL::name(EvtPDL::evtIdFromLundKC(pdgID[id])) << " ";
             };
-            cout<<endl;
+            cout << endl;
         }
     };
 
