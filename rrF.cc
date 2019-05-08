@@ -30,6 +30,7 @@ Double_t fPx[MAX], fPy[MAX], fPz[MAX], fE[MAX];
 Double_t fVx[MAX], fVy[MAX], fVz[MAX], fT[MAX];
 Double_t fTht[MAX], fM[MAX], fP[MAX], fPt[MAX];
 Int_t nTrk = 0;
+Double_t fProb;
 
 
 void read_args(int argc, char **argv) {
@@ -109,6 +110,7 @@ void init_input_fields(TTree *ntp) {
     ntp->SetBranchAddress("p", fP);
     ntp->SetBranchAddress("pt", fPt);
     ntp->SetBranchAddress("tht", fTht);
+    ntp->SetBranchAddress("prob", &fProb);
 }
 
 float calc_var(string var) {
@@ -128,6 +130,9 @@ float calc_var(string var) {
             P += _p;
         }
         return P.M();
+    }
+    else if(var == "prob") {
+        return fProb;
     } else {
         cout << "Unknown variable " << var << endl;
         ::abort();
