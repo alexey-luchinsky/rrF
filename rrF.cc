@@ -157,6 +157,9 @@ void read_event(TNtuple *tup, int iEv) {
 
 int main(int argc, char **argv) {
     read_args(argc, argv);
+    
+    EvtPDL pdl;
+    pdl.read("evt.pdl");
 
     TFile *in_file = new TFile(inFileName.c_str(), "READ");
     TFile *out_file = new TFile(outFileName.c_str(), "RECREATE");
@@ -178,6 +181,12 @@ int main(int argc, char **argv) {
         ntp->GetEvent(iEv);
         if (iEv % (nEv / 10) == 0) cout << " iEv=" << iEv << endl;
         read_event(tup, iEv);
+        if(print_ids) {
+            for(int id=0; id<nTrk; ++id) {
+                cout<<id<<":"<<EvtPDL::name(EvtPDL::evtIdFromLundKC(pdgID[id]))<<" ";
+            };
+            cout<<endl;
+        }
     };
 
     tup->Write();
