@@ -119,15 +119,20 @@ void init_input_fields(TTree *ntp) {
     ntp->SetBranchAddress("prob", &fProb);
 }
 
+int char_to_ind(char c) {
+    int ind = c - '0';
+    if (ind < 0 || ind >= nTrk) {
+        cout << "wrong particle number " << ind << endl;
+        ::abort();
+    };
+    return ind;
+}
+
 float calc_var(string var) {
     if (var.substr(0, 3) == "m2_") {
         TLorentzVector P, _p;
         for (int i = 3; i < var.length(); ++i) {
-            int ind = var[i] - '0';
-            if (ind < 0 || ind >= nTrk) {
-                cout << "wrong particle number " << ind << endl;
-                ::abort();
-            };
+            int ind = char_to_ind(var[i]);
             _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
             P += _p;
         }
@@ -135,21 +140,13 @@ float calc_var(string var) {
     } else if (var.substr(0, 2) == "m_") {
         TLorentzVector P, _p;
         for (int i = 2; i < var.length(); ++i) {
-            int ind = var[i] - '0';
-            if (ind < 0 || ind >= nTrk) {
-                cout << "wrong particle number " << ind << endl;
-                ::abort();
-            };
+            int ind = char_to_ind(var[i]);
             _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
             P += _p;
         }
         return P.M();
     } else if (var.substr(0, 3) == "id_") {
-        int ind = var[3] - '0';
-        if (ind < 0 || ind >= nTrk) {
-            cout << "wrong particle number " << ind << endl;
-            ::abort();
-        };
+        int ind = char_to_ind(var[3]);
         return pdgID[ind];
     } else if (var == "prob") {
         return fProb;
