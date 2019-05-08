@@ -20,6 +20,7 @@ using namespace std;
 // command line parameters
 string inFileName, outFileName;
 vector<string> vars;
+int nev;
 
 // input file fields
 #define MAX 100
@@ -37,11 +38,13 @@ void read_args(int argc, char **argv) {
         ValueArg<string> inFileName_arg("i", "in", "input ROOT file", false, "evtOutput.root", "string", cmd);
         ValueArg<string> outFileName_arg("o", "out", "output ROOT file", false, "out.root", "string", cmd);
         MultiArg<string> vars_arg("v", "var", "variable to be saved, e.g. m2_12", true, "string", cmd);
+        ValueArg<float> nev_arg("n", "nev", "Number of events to be read (negative if all events should be read)", false, -1, "float", cmd);
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
         outFileName = outFileName_arg.getValue();
         auto vars_ = vars_arg.getValue();
+        nev = (int)nev_arg.getValue();
         for (int iv = 0; iv < vars_.size(); iv++) {
             auto v = vars_[iv];
             if (v[0] == '[' && v[v.length() - 1] == ']') {
@@ -147,8 +150,10 @@ int main(int argc, char **argv) {
     TFile *out_file = new TFile(outFileName.c_str(), "RECREATE");
 
     TTree *ntp = (TTree*) in_file->Get("ntp");
-    int nEv = ntp->GetEntries();
     init_input_fields(ntp);
+    int nEv;
+    if(nev<0 || nev>ntp->GetEntries()) nEv=ntp->GetEntries();
+    else nEv = nev;
 
     string fields = "";
     for (int i = 0; i < vars.size(); ++i) {
