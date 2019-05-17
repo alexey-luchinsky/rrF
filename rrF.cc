@@ -130,7 +130,7 @@ int char_to_ind(char c) {
 
 TLorentzVector get_mom_from_arg(string var, int pos) {
     TLorentzVector P,_p;
-    for(int i=pos; i<=var.length(); ++i) {
+    for(int i=pos; i<var.length(); ++i) {
             int ind = char_to_ind(var[i]);
             _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
             P += _p;
@@ -145,11 +145,7 @@ float calc_var(string var) {
         return P.M2();
     } else if (var.substr(0, 2) == "m_") {
         TLorentzVector P, _p;
-        for (int i = 2; i < var.length(); ++i) {
-            int ind = char_to_ind(var[i]);
-            _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
-            P += _p;
-        }
+        P = get_mom_from_arg(var, 2);
         return P.M();
     } else if (var.substr(0, 3) == "id_") {
         int ind = char_to_ind(var[3]);
