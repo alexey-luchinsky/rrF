@@ -129,11 +129,16 @@ int char_to_ind(char c) {
 }
 
 TLorentzVector get_mom_from_arg(string var, int pos) {
-    TLorentzVector P,_p;
-    for(int i=pos; i<var.length(); ++i) {
-            int ind = char_to_ind(var[i]);
-            _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
-            P += _p;
+    TLorentzVector P, _p;
+    for (int i = pos; i < var.length(); ++i) {
+        float fact = 1;
+        if(var[i]=='m' && i<var.length()) {
+            fact = -1;
+            ++i;
+        }
+        int ind = char_to_ind(var[i]);
+        _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
+        P += fact*_p;
     };
     return P;
 }
