@@ -144,8 +144,11 @@ TLorentzVector get_mom_from_arg(string var, int pos) {
 }
 
 float calc_var(string var) {
-    TLorentzVector P, _p;
-    if (var.substr(0, 3) == "m2_") {
+    TLorentzVector P;
+    if(var.substr(0,3)=="pT_" || var.substr(0,3)=="pt_") {
+        P = get_mom_from_arg(var,3);
+        return P.Pt();
+    } else if (var.substr(0, 3) == "m2_") {
         P = get_mom_from_arg(var, 3);
         return P.M2();
     } else if (var.substr(0, 2) == "m_") {
