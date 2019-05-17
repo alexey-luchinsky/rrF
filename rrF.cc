@@ -128,22 +128,29 @@ int char_to_ind(char c) {
     return ind;
 }
 
-float calc_var(string var) {
-    if (var.substr(0, 3) == "m2_") {
-        TLorentzVector P, _p;
-        for (int i = 3; i < var.length(); ++i) {
-            int ind = char_to_ind(var[i]);
-            _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
-            P += _p;
+TLorentzVector get_mom_from_arg(string var, int pos) {
+    TLorentzVector P, _p;
+    for (int i = pos; i < var.length(); ++i) {
+        float fact = 1;
+        if(var[i]=='m' && i<var.length()) {
+            fact = -1;
+            ++i;
         }
+        int ind = char_to_ind(var[i]);
+        _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
+        P += fact*_p;
+    };
+    return P;
+}
+
+float calc_var(string var) {
+    TLorentzVector P, _p;
+    if (var.substr(0, 3) == "m2_") {
+        P = get_mom_from_arg(var, 3);
         return P.M2();
     } else if (var.substr(0, 2) == "m_") {
         TLorentzVector P, _p;
-        for (int i = 2; i < var.length(); ++i) {
-            int ind = char_to_ind(var[i]);
-            _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
-            P += _p;
-        }
+        P = get_mom_from_arg(var, 2);
         return P.M();
     } else if (var.substr(0, 3) == "id_") {
         int ind = char_to_ind(var[3]);
