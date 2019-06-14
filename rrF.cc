@@ -151,6 +151,9 @@ float calc_var(string var) {
     } else  if(var.substr(0,3)=="pT_" || var.substr(0,3)=="pt_") {
         P = get_mom_from_arg(var,3);
         return P.Pt();
+    } else  if(var.substr(0,2)=="E_" || var.substr(0,2)=="e_") {
+        P = get_mom_from_arg(var,2);
+        return P.E();
     } else if (var.substr(0, 3) == "m2_") {
         P = get_mom_from_arg(var, 3);
         return P.M2();
