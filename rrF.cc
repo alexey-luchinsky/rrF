@@ -39,10 +39,16 @@ void saveHST(TNtuple *tup, string var, string fileName) {
     int nBins = 50;
     cout << " Saving " << var << " to file " << fileName << endl;
     double min = tup->GetMinimum(var.c_str()), max = tup->GetMaximum(var.c_str());
-    TH1F *hst = new TH1F("hst", "hst", nBins, min, max);
-
+    TH1F *histogram = new TH1F("hst", "hst", nBins, min, max);
+    tup->Project("hst",var.c_str());   
     ofstream file;
     file.open(fileName);
+        for (int i = 1; i <= histogram->GetNbinsX(); i++)
+        file << setiosflags(ios::scientific) << histogram->GetBinCenter(i) <<
+        " " << setiosflags(ios::scientific) << histogram->GetBinContent(i) / histogram->GetBinWidth(i) <<
+        " " << setiosflags(ios::scientific) << histogram->GetBinError(i) / histogram->GetBinWidth(i) << endl;
+
+    histogram->Delete();
     file.close();
 
 }
