@@ -32,6 +32,11 @@ Double_t fVx[MAX], fVy[MAX], fVz[MAX], fT[MAX];
 Double_t fTht[MAX], fM[MAX], fP[MAX], fPt[MAX];
 Int_t nTrk = 0;
 Double_t fProb;
+bool save_hst;
+
+void saveHST(TNtuple *tup, string var, string fileName) {
+    cout << " Saving " << var << " to file " << fileName << endl;
+}
 
 void read_args(int argc, char **argv) {
     try {
@@ -42,11 +47,14 @@ void read_args(int argc, char **argv) {
         ValueArg<float> nev_arg("n", "nev", "Number of events to be read (negative if all events should be read)", false, -1, "float", cmd);
         SwitchArg print_ids_arg("p", "print-ids", "should we print ids of the particles", false);
         cmd.add(print_ids_arg);
+        SwitchArg save_hst_arg("s", "save", "Should we save histograms as text files?", false);
+        cmd.add(save_hst_arg);
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
         outFileName = outFileName_arg.getValue();
         print_ids = print_ids_arg.getValue();
+        save_hst = save_hst_arg.getValue();
 
         // reading the vars list
         auto vars_ = vars_arg.getValue();
@@ -85,6 +93,7 @@ void read_args(int argc, char **argv) {
     cout << "]" << endl;
     cout << " nev = " << nev << endl;
     cout << " print_ids = " << print_ids << endl;
+    cout << " save_hst = " << save_hst << endl;
 }
 
 void init_input_fields(TTree *ntp) {
@@ -132,7 +141,7 @@ TLorentzVector get_mom_from_arg(string var, int pos) {
     TLorentzVector P, _p;
     for (int i = pos; i < var.length(); ++i) {
         float fact = 1;
-        if(var[i]=='m' && i<var.length()) {
+        if (var[i] == 'm' && i < var.length()) {
             fact = -1;
             ++i;
         }
@@ -145,14 +154,14 @@ TLorentzVector get_mom_from_arg(string var, int pos) {
 
 float calc_var(string var) {
     TLorentzVector P;
-    if(var.substr(0,4)=="cth_") {
-        P = get_mom_from_arg(var,4);
-        return P.Z()/sqrt(P.X()*P.X()+P.Y()*P.Y()+P.Z()*P.Z());
-    } else  if(var.substr(0,3)=="pT_" || var.substr(0,3)=="pt_") {
-        P = get_mom_from_arg(var,3);
+    if (var.substr(0, 4) == "cth_") {
+        P = get_mom_from_arg(var, 4);
+        return P.Z() / sqrt(P.X() * P.X() + P.Y() * P.Y() + P.Z() * P.Z());
+    } else if (var.substr(0, 3) == "pT_" || var.substr(0, 3) == "pt_") {
+        P = get_mom_from_arg(var, 3);
         return P.Pt();
-    } else  if(var.substr(0,2)=="E_" || var.substr(0,2)=="e_") {
-        P = get_mom_from_arg(var,2);
+    } else if (var.substr(0, 2) == "E_" || var.substr(0, 2) == "e_") {
+        P = get_mom_from_arg(var, 2);
         return P.E();
     } else if (var.substr(0, 3) == "m2_") {
         P = get_mom_from_arg(var, 3);
@@ -213,6 +222,12 @@ int main(int argc, char **argv) {
             };
             cout << endl;
         }
+    };
+
+    if (save_hst) {
+        for (int i = 0; i < vars.size(); ++i) {
+            saveHST(tup, vars[i], vars[i]+".txt");
+        };
     };
 
     tup->Write();
