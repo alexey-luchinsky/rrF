@@ -7,6 +7,7 @@
 #include "tclap/CmdLine.h"
 #include <iostream>
 #include <regex>
+#include <fstream>
 #include "TFile.h"
 #include "TNtuple.h"
 #include "TH1F.h"
@@ -35,7 +36,15 @@ Double_t fProb;
 bool save_hst;
 
 void saveHST(TNtuple *tup, string var, string fileName) {
+    int nBins = 50;
     cout << " Saving " << var << " to file " << fileName << endl;
+    double min = tup->GetMinimum(var.c_str()), max = tup->GetMaximum(var.c_str());
+    TH1F *hst = new TH1F("hst", "hst", nBins, min, max);
+
+    ofstream file;
+    file.open(fileName);
+    file.close();
+
 }
 
 void read_args(int argc, char **argv) {
@@ -226,7 +235,7 @@ int main(int argc, char **argv) {
 
     if (save_hst) {
         for (int i = 0; i < vars.size(); ++i) {
-            saveHST(tup, vars[i], vars[i]+".txt");
+            saveHST(tup, vars[i], vars[i] + ".txt");
         };
     };
 
