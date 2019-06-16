@@ -32,14 +32,15 @@ Double_t fPx[MAX], fPy[MAX], fPz[MAX], fE[MAX];
 Double_t fVx[MAX], fVy[MAX], fVz[MAX], fT[MAX];
 Double_t fTht[MAX], fM[MAX], fP[MAX], fPt[MAX];
 Int_t nTrk = 0;
+int nBins;
 Double_t fProb;
 bool save_hst;
 
 void saveHST(TNtuple *tup, string var, string fileName) {
-    int nBins = 50;
     cout << " Saving " << var << " to file " << fileName << endl;
     double min = tup->GetMinimum(var.c_str()), max = tup->GetMaximum(var.c_str());
     TH1F *histogram = new TH1F("hst", "hst", nBins, min, max);
+    histogram->Sumw2();
     tup->Project("hst",var.c_str());   
     ofstream file;
     file.open(fileName);
@@ -64,12 +65,14 @@ void read_args(int argc, char **argv) {
         cmd.add(print_ids_arg);
         SwitchArg save_hst_arg("s", "save", "Should we save histograms as text files?", false);
         cmd.add(save_hst_arg);
+        ValueArg<int> nBins_arg("b","bins","Number of bins in the histogrm", false, 50, "int", cmd);
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
         outFileName = outFileName_arg.getValue();
         print_ids = print_ids_arg.getValue();
         save_hst = save_hst_arg.getValue();
+        nBins = nBins_arg.getValue();
 
         // reading the vars list
         auto vars_ = vars_arg.getValue();
@@ -106,9 +109,10 @@ void read_args(int argc, char **argv) {
         cout << vars[i] << " ";
     };
     cout << "]" << endl;
-    cout << " nev = " << nev << endl;
-    cout << " print_ids = " << print_ids << endl;
-    cout << " save_hst = " << save_hst << endl;
+    cout << "\t nev = " << nev << endl;
+    cout << "\t print_ids = " << print_ids << endl;
+    cout << "\t save_hst = " << save_hst << endl;
+    cout << "\t nBins = "<<nBins<<endl;
 }
 
 void init_input_fields(TTree *ntp) {
