@@ -6,3 +6,6 @@ data/
 .ipynb_checkpoints/
 compare.ipynb
 kks_main.cpp
+avg/
+*.txt
+
