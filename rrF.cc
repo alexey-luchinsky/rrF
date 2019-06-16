@@ -18,9 +18,14 @@
 using namespace TCLAP;
 using namespace std;
 
+// histogram parameters
+vector<string> vars;
+vector<float> min_list, max_list;
+vector<int> nbins_list;
+
+
 // command line parameters
 string inFileName, outFileName;
-vector<string> vars;
 int nev;
 bool print_ids;
 
@@ -36,12 +41,17 @@ int nBins;
 Double_t fProb;
 bool save_hst;
 
-void saveHST(TNtuple *tup, string var, string fileName) {
+void saveHST(TNtuple *tup, string var, string fileName, double min_=1, double max_=-1, int bins_=-1) {
     cout << " Saving " << var << " to file " << fileName << endl;
-    double min = tup->GetMinimum(var.c_str()), max = tup->GetMaximum(var.c_str());
-    TH1F *histogram = new TH1F("hst", "hst", nBins, min, max);
+    double min=min_, max=max_;
+    if(min>max){
+        min = tup->GetMinimum(var.c_str()), max = tup->GetMaximum(var.c_str());
+    };
+    int bins = bins_;
+    if(bins<0) bins=nBins;
+    TH1F *histogram = new TH1F("h", "h", bins, min, max);
     histogram->Sumw2();
-    tup->Project("hst",var.c_str());   
+    tup->Project("h",var.c_str());   
     ofstream file;
     file.open(fileName);
         for (int i = 1; i <= histogram->GetNbinsX(); i++)
@@ -51,7 +61,38 @@ void saveHST(TNtuple *tup, string var, string fileName) {
 
     histogram->Delete();
     file.close();
+}
+void saveHST(TNamed *tup, int ih) {
+    for(int i=0; i<vars.size(); ++i) {
+        
+    }
+}
 
+
+void read_hst_args(vector<string> vars_) {
+            for (int iv = 0; iv < vars_.size(); iv++) {
+            auto v = vars_[iv];
+            if (v[0] == '[' && v[v.length() - 1] == ']') {
+                v = std::regex_replace(v, std::regex(" "), "");
+                v = std::regex_replace(v, std::regex("\\["), "");
+                v = std::regex_replace(v, std::regex("\\]"), "");
+                cout << "LIST OF ARGS" << endl;
+                string delim = ",";
+                size_t prev = 0, pos = 0;
+                do {
+                    pos = v.find(delim, prev);
+                    if (pos == string::npos) pos = v.length();
+                    auto token = v.substr(prev, pos - prev);
+                    if (!token.empty()) vars.push_back(token);
+                    prev = pos + delim.length();
+                } while (pos < v.length() && prev < v.length());
+            } else {
+                vars.push_back(v);
+                min_list.push_back(1);
+                max_list.push_back(0);
+                nbins_list.push_back(-1);
+            };
+        };
 }
 
 void read_args(int argc, char **argv) {
@@ -73,30 +114,10 @@ void read_args(int argc, char **argv) {
         print_ids = print_ids_arg.getValue();
         save_hst = save_hst_arg.getValue();
         nBins = nBins_arg.getValue();
+        nev = (int) nev_arg.getValue();
 
         // reading the vars list
-        auto vars_ = vars_arg.getValue();
-        nev = (int) nev_arg.getValue();
-        for (int iv = 0; iv < vars_.size(); iv++) {
-            auto v = vars_[iv];
-            if (v[0] == '[' && v[v.length() - 1] == ']') {
-                v = std::regex_replace(v, std::regex(" "), "");
-                v = std::regex_replace(v, std::regex("\\["), "");
-                v = std::regex_replace(v, std::regex("\\]"), "");
-                cout << "LIST OF ARGS" << endl;
-                string delim = ",";
-                size_t prev = 0, pos = 0;
-                do {
-                    pos = v.find(delim, prev);
-                    if (pos == string::npos) pos = v.length();
-                    auto token = v.substr(prev, pos - prev);
-                    if (!token.empty()) vars.push_back(token);
-                    prev = pos + delim.length();
-                } while (pos < v.length() && prev < v.length());
-            } else {
-                vars.push_back(v);
-            };
-        };
+        read_hst_args(vars_arg.getValue());
     } catch (ArgException &e) {
         cerr << "error: " << e.error() << " at arg=" << e.argId() << endl;
     };
