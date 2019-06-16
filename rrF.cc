@@ -7,6 +7,7 @@
 #include "tclap/CmdLine.h"
 #include <iostream>
 #include <regex>
+#include <fstream>
 #include "TFile.h"
 #include "TNtuple.h"
 #include "TH1F.h"
@@ -31,7 +32,27 @@ Double_t fPx[MAX], fPy[MAX], fPz[MAX], fE[MAX];
 Double_t fVx[MAX], fVy[MAX], fVz[MAX], fT[MAX];
 Double_t fTht[MAX], fM[MAX], fP[MAX], fPt[MAX];
 Int_t nTrk = 0;
+int nBins;
 Double_t fProb;
+bool save_hst;
+
+void saveHST(TNtuple *tup, string var, string fileName) {
+    cout << " Saving " << var << " to file " << fileName << endl;
+    double min = tup->GetMinimum(var.c_str()), max = tup->GetMaximum(var.c_str());
+    TH1F *histogram = new TH1F("hst", "hst", nBins, min, max);
+    histogram->Sumw2();
+    tup->Project("hst",var.c_str());   
+    ofstream file;
+    file.open(fileName);
+        for (int i = 1; i <= histogram->GetNbinsX(); i++)
+        file << setiosflags(ios::scientific) << histogram->GetBinCenter(i) <<
+        " " << setiosflags(ios::scientific) << histogram->GetBinContent(i) / histogram->GetBinWidth(i) <<
+        " " << setiosflags(ios::scientific) << histogram->GetBinError(i) / histogram->GetBinWidth(i) << endl;
+
+    histogram->Delete();
+    file.close();
+
+}
 
 void read_args(int argc, char **argv) {
     try {
@@ -42,11 +63,16 @@ void read_args(int argc, char **argv) {
         ValueArg<float> nev_arg("n", "nev", "Number of events to be read (negative if all events should be read)", false, -1, "float", cmd);
         SwitchArg print_ids_arg("p", "print-ids", "should we print ids of the particles", false);
         cmd.add(print_ids_arg);
+        SwitchArg save_hst_arg("s", "save", "Should we save histograms as text files?", false);
+        cmd.add(save_hst_arg);
+        ValueArg<int> nBins_arg("b","bins","Number of bins in the histogrm", false, 50, "int", cmd);
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
         outFileName = outFileName_arg.getValue();
         print_ids = print_ids_arg.getValue();
+        save_hst = save_hst_arg.getValue();
+        nBins = nBins_arg.getValue();
 
         // reading the vars list
         auto vars_ = vars_arg.getValue();
@@ -83,8 +109,10 @@ void read_args(int argc, char **argv) {
         cout << vars[i] << " ";
     };
     cout << "]" << endl;
-    cout << " nev = " << nev << endl;
-    cout << " print_ids = " << print_ids << endl;
+    cout << "\t nev = " << nev << endl;
+    cout << "\t print_ids = " << print_ids << endl;
+    cout << "\t save_hst = " << save_hst << endl;
+    cout << "\t nBins = "<<nBins<<endl;
 }
 
 void init_input_fields(TTree *ntp) {
@@ -132,7 +160,7 @@ TLorentzVector get_mom_from_arg(string var, int pos) {
     TLorentzVector P, _p;
     for (int i = pos; i < var.length(); ++i) {
         float fact = 1;
-        if(var[i]=='m' && i<var.length()) {
+        if (var[i] == 'm' && i < var.length()) {
             fact = -1;
             ++i;
         }
@@ -145,14 +173,14 @@ TLorentzVector get_mom_from_arg(string var, int pos) {
 
 float calc_var(string var) {
     TLorentzVector P;
-    if(var.substr(0,4)=="cth_") {
-        P = get_mom_from_arg(var,4);
-        return P.Z()/sqrt(P.X()*P.X()+P.Y()*P.Y()+P.Z()*P.Z());
-    } else  if(var.substr(0,3)=="pT_" || var.substr(0,3)=="pt_") {
-        P = get_mom_from_arg(var,3);
+    if (var.substr(0, 4) == "cth_") {
+        P = get_mom_from_arg(var, 4);
+        return P.Z() / sqrt(P.X() * P.X() + P.Y() * P.Y() + P.Z() * P.Z());
+    } else if (var.substr(0, 3) == "pT_" || var.substr(0, 3) == "pt_") {
+        P = get_mom_from_arg(var, 3);
         return P.Pt();
-    } else  if(var.substr(0,2)=="E_" || var.substr(0,2)=="e_") {
-        P = get_mom_from_arg(var,2);
+    } else if (var.substr(0, 2) == "E_" || var.substr(0, 2) == "e_") {
+        P = get_mom_from_arg(var, 2);
         return P.E();
     } else if (var.substr(0, 3) == "m2_") {
         P = get_mom_from_arg(var, 3);
@@ -213,6 +241,12 @@ int main(int argc, char **argv) {
             };
             cout << endl;
         }
+    };
+
+    if (save_hst) {
+        for (int i = 0; i < vars.size(); ++i) {
+            saveHST(tup, vars[i], vars[i] + ".txt");
+        };
     };
 
     tup->Write();
