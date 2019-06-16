@@ -81,16 +81,22 @@ void add_var(string var) {
     v = regex_replace(v, regex("\\)"),":");
     vector<string> vv = split_string(v, ":");
     cout<<"vv]="<<vv.size()<<endl;
+    // read var name
     if(vv.size()<1) {
         cout<<"WR0NG variable "<<var<<"!"<<endl;
     } else vars.push_back(vv[0]);
+    // read nbins
     if(vv.size()<2) {
         nbins_list.push_back(-1);
     } else {
         nbins_list.push_back(atoi(vv[1].c_str()));
     };
-        
-    min_list.push_back(1);
+    // read min
+    if(vv.size()<3) {
+        min_list.push_back(1);
+    } else {
+        min_list.push_back(atof(vv[2].c_str()));
+    };
     max_list.push_back(0);
 }
 
@@ -153,9 +159,15 @@ void read_args(int argc, char **argv) {
     for (int i = 0; i < vars.size(); ++i) {
         cout << vars[i] << " ";
     };
+    cout << "]" << endl;
     cout<<"\t nBins_list=[";
     for (int i = 0; i < nbins_list.size(); ++i) {
         cout << nbins_list[i] << " ";
+    };
+    cout << "]" << endl;
+    cout<<"\t min_list=[";
+    for (int i = 0; i < min_list.size(); ++i) {
+        cout << min_list[i] << " ";
     };
     cout << "]" << endl;
     cout << "\t nev = " << nev << endl;
@@ -294,7 +306,7 @@ int main(int argc, char **argv) {
 
     if (save_hst) {
         for (int i = 0; i < vars.size(); ++i) {
-            saveHST(tup, vars[i], vars[i] + ".txt", 1, -1, nbins_list[i]);
+            saveHST(tup, vars[i], vars[i] + ".txt", min_list[i], -1, nbins_list[i]);
         };
     };
 
