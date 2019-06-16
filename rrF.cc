@@ -41,20 +41,20 @@ int nBins;
 Double_t fProb;
 bool save_hst;
 
-void saveHST(TNtuple *tup, string var, string fileName, double min_=1, double max_=-1, int bins_=-1) {
+void saveHST(TNtuple *tup, string var, string fileName, double min_ = 1, double max_ = -1, int bins_ = -1) {
     cout << " Saving " << var << " to file " << fileName << endl;
-    double min=min_, max=max_;
-    if(min>max){
+    double min = min_, max = max_;
+    if (min > max) {
         min = tup->GetMinimum(var.c_str()), max = tup->GetMaximum(var.c_str());
     };
     int bins = bins_;
-    if(bins<0) bins=nBins;
+    if (bins < 0) bins = nBins;
     TH1F *histogram = new TH1F("h", "h", bins, min, max);
     histogram->Sumw2();
-    tup->Project("h",var.c_str());   
+    tup->Project("h", var.c_str());
     ofstream file;
     file.open(fileName);
-        for (int i = 1; i <= histogram->GetNbinsX(); i++)
+    for (int i = 1; i <= histogram->GetNbinsX(); i++)
         file << setiosflags(ios::scientific) << histogram->GetBinCenter(i) <<
         " " << setiosflags(ios::scientific) << histogram->GetBinContent(i) / histogram->GetBinWidth(i) <<
         " " << setiosflags(ios::scientific) << histogram->GetBinError(i) / histogram->GetBinWidth(i) << endl;
@@ -62,38 +62,62 @@ void saveHST(TNtuple *tup, string var, string fileName, double min_=1, double ma
     histogram->Delete();
     file.close();
 }
-void saveHST(TNamed *tup, int ih) {
-    for(int i=0; i<vars.size(); ++i) {
-        
+
+vector<string> split_string(string str, string sep){
+    char* cstr=const_cast<char*>(str.c_str());
+    char* current;
+    vector<std::string> arr;
+    current=strtok(cstr,sep.c_str());
+    while(current != NULL){
+        arr.push_back(current);
+        current=strtok(NULL, sep.c_str());
     }
+    return arr;
 }
 
+void add_var(string var) {
+    string v = var;
+    v = regex_replace(v, regex("\\("),":");
+    v = regex_replace(v, regex("\\)"),":");
+    vector<string> vv = split_string(v, ":");
+    cout<<"vv]="<<vv.size()<<endl;
+    if(vv.size()<1) {
+        cout<<"WR0NG variable "<<var<<"!"<<endl;
+    } else vars.push_back(vv[0]);
+    if(vv.size()<2) {
+        nbins_list.push_back(-1);
+    } else {
+        nbins_list.push_back(atoi(vv[1].c_str()));
+    };
+        
+    min_list.push_back(1);
+    max_list.push_back(0);
+}
 
 void read_hst_args(vector<string> vars_) {
-            for (int iv = 0; iv < vars_.size(); iv++) {
-            auto v = vars_[iv];
-            if (v[0] == '[' && v[v.length() - 1] == ']') {
-                v = std::regex_replace(v, std::regex(" "), "");
-                v = std::regex_replace(v, std::regex("\\["), "");
-                v = std::regex_replace(v, std::regex("\\]"), "");
-                cout << "LIST OF ARGS" << endl;
-                string delim = ",";
-                size_t prev = 0, pos = 0;
-                do {
-                    pos = v.find(delim, prev);
-                    if (pos == string::npos) pos = v.length();
-                    auto token = v.substr(prev, pos - prev);
-                    if (!token.empty()) vars.push_back(token);
-                    prev = pos + delim.length();
-                } while (pos < v.length() && prev < v.length());
-            } else {
-                vars.push_back(v);
-                min_list.push_back(1);
-                max_list.push_back(0);
-                nbins_list.push_back(-1);
-            };
+    for (int iv = 0; iv < vars_.size(); iv++) {
+        auto v = vars_[iv];
+        if (v[0] == '[' && v[v.length() - 1] == ']') {
+            v = std::regex_replace(v, std::regex(" "), "");
+            v = std::regex_replace(v, std::regex("\\["), "");
+            v = std::regex_replace(v, std::regex("\\]"), "");
+            cout << "LIST OF ARGS" << endl;
+            
+            string delim = ",";
+            size_t prev = 0, pos = 0;
+            do {
+                pos = v.find(delim, prev);
+                if (pos == string::npos) pos = v.length();
+                auto token = v.substr(prev, pos - prev);
+                if (!token.empty()) add_var(token);
+                prev = pos + delim.length();
+            } while (pos < v.length() && prev < v.length());
+        } else {
+            add_var(v);
         };
+    };
 }
+
 
 void read_args(int argc, char **argv) {
     try {
@@ -106,7 +130,7 @@ void read_args(int argc, char **argv) {
         cmd.add(print_ids_arg);
         SwitchArg save_hst_arg("s", "save", "Should we save histograms as text files?", false);
         cmd.add(save_hst_arg);
-        ValueArg<int> nBins_arg("b","bins","Number of bins in the histogrm", false, 50, "int", cmd);
+        ValueArg<int> nBins_arg("b", "bins", "Number of bins in the histogrm", false, 50, "int", cmd);
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
@@ -125,15 +149,19 @@ void read_args(int argc, char **argv) {
     cout << " Running with: " << endl;
     cout << "\t inFileName=" << inFileName << endl;
     cout << "\t outFileName=" << outFileName << endl;
-    cout << " vars = [";
+    cout << "\t vars = [";
     for (int i = 0; i < vars.size(); ++i) {
         cout << vars[i] << " ";
+    };
+    cout<<"\t nBins_list=[";
+    for (int i = 0; i < nbins_list.size(); ++i) {
+        cout << nbins_list[i] << " ";
     };
     cout << "]" << endl;
     cout << "\t nev = " << nev << endl;
     cout << "\t print_ids = " << print_ids << endl;
     cout << "\t save_hst = " << save_hst << endl;
-    cout << "\t nBins = "<<nBins<<endl;
+    cout << "\t nBins = " << nBins << endl;
 }
 
 void init_input_fields(TTree *ntp) {
@@ -266,7 +294,7 @@ int main(int argc, char **argv) {
 
     if (save_hst) {
         for (int i = 0; i < vars.size(); ++i) {
-            saveHST(tup, vars[i], vars[i] + ".txt");
+            saveHST(tup, vars[i], vars[i] + ".txt", 1, -1, nbins_list[i]);
         };
     };
 
