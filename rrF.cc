@@ -97,7 +97,12 @@ void add_var(string var) {
     } else {
         min_list.push_back(atof(vv[2].c_str()));
     };
-    max_list.push_back(0);
+    // read max
+    if(vv.size()<4) {
+        max_list.push_back(0);
+    } else {
+        max_list.push_back(atof(vv[3].c_str()));
+    };
 }
 
 void read_hst_args(vector<string> vars_) {
@@ -168,6 +173,11 @@ void read_args(int argc, char **argv) {
     cout<<"\t min_list=[";
     for (int i = 0; i < min_list.size(); ++i) {
         cout << min_list[i] << " ";
+    };
+    cout << "]" << endl;
+    cout<<"\t max_list=[";
+    for (int i = 0; i < max_list.size(); ++i) {
+        cout << max_list[i] << " ";
     };
     cout << "]" << endl;
     cout << "\t nev = " << nev << endl;
@@ -306,7 +316,7 @@ int main(int argc, char **argv) {
 
     if (save_hst) {
         for (int i = 0; i < vars.size(); ++i) {
-            saveHST(tup, vars[i], vars[i] + ".txt", min_list[i], -1, nbins_list[i]);
+            saveHST(tup, vars[i], vars[i] + ".txt", min_list[i], max_list[i], nbins_list[i]);
         };
     };
 
