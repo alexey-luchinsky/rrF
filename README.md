@@ -47,10 +47,10 @@ Included files are:
 
 Installation is pretty straightforward. You need to have ROOT, EvtGen, and HEPMC installed on your computer. After correcting the paths in Find*.cmake files do the following:
 
-** cd build/**
+**cd build/**
 
-** cmake ../**
+**cmake ../**
 
-** make**
+**make**
 
 
