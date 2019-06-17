@@ -1,1 +1,0 @@
-* <2019-05-07 Tue> Multiple variables can be saved in one file (see -v parameter)

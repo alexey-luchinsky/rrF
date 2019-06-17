@@ -22,4 +22,10 @@ all: simpleEvtGenRO.exe rrF.exe
 	${GCC} -o $@  $< ${FLAGS}  ${INC} ${LIBS}
 
 clean:
-	rm *.exe *~
+	rm *.exe
+
+clean_data:
+	rm *.root *_*.txt *~
+
+	
+	
