@@ -18,6 +18,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 include(FindROOT.cmake)
 MESSAGE(${ROOT_LIBRARIES})
 include(FindEvtGen.cmake)
+include(FindHepMC.cmake)
+
 
 ## set fortran flags
 SET_COMPILE_FLAG(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}"
@@ -43,6 +45,6 @@ include_directories(src/)
 add_executable (rrF.exe "src/rrF.cc")
 target_link_libraries(rrF.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/libEvtGen.a)
 
-#adding sources for rrF.exe
-# add_executable (simpleEvtGenRo.exe "src/simpleEvtGenRo.cc")
-# target_link_libraries(simpleEvtGenRo.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/libEvtGen.a)
+#adding sources for simpleEvtGenRO.exe
+add_executable (simpleEvtGenRo.exe "src/simpleEvtGenRo.cc" "src/a.for")
+target_link_libraries(simpleEvtGenRo.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC.a)
