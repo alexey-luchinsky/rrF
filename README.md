@@ -36,11 +36,21 @@ Several histograms can be saved either by giving "-v" arguments more than once, 
 
 Included files are:
 
-* rrF.cc --- source of the tool
-* simpleEvtGenRo.cc --- file to produce ROOT,  taken from EvtGen distribution
-* Makefile
-* evt.pdl (required by simpleEvtGenRo) --- list of the particles,  taken from EvtGen distribution
-* tau_enu.dec --- sample decay file
+* src/rrF.cc --- source of the tool
+* src/simpleEvtGenRo.cc --- file to produce ROOT,  taken from EvtGen distribution
+* src/a.for --- empty file needed to link with EvtGen
+* build/evt.pdl (required by simpleEvtGenRo) --- list of the particles,  taken from EvtGen distribution
+* build/tau_enu.dec --- sample decay file
+* Find*.cmake --- cmake scripts to find different packages
 
-Installation is pretty straightforward. You need to have ROOT, EvtGen, and HEPMC installed on your computer. After correcting the paths to the corresponding libraries in the Makefile simply use **make**.
+
+
+Installation is pretty straightforward. You need to have ROOT, EvtGen, and HEPMC installed on your computer. After correcting the paths in Find*.cmake files do the following:
+
+** cd build/**
+
+** cmake ../**
+
+** make**
+
 
