@@ -105,11 +105,11 @@ int main(int argc, char* argv[]) {
     std::list<EvtDecayBase*> extraModels = genList.getListOfModels();
 
     // Create the EvtGen generator object
-    EvtGen myGenerator(argv[2], "evt.pdl", myRandomEngine,
+    EvtGen myGenerator(argv[2], "../src/evt.pdl", myRandomEngine,
             radCorrEngine, &extraModels);
 #else
     //If you don't want to use external generators, use the following:
-    EvtGen myGenerator(argv[2], "evt.pdl", myRandomEngine);
+    EvtGen myGenerator(argv[2], "../src/evt.pdl", myRandomEngine);
 #endif
 
 
