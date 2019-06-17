@@ -43,15 +43,16 @@ bool save_hst;
 
 void saveHST(TNtuple *tup, string var, string fileName, double min_ = 1, double max_ = -1, int bins_ = -1) {
     cout << " Saving " << var << " to file " << fileName << endl;
+    const char *var_name = var.c_str();
     double min = min_, max = max_;
     if (min > max) {
         min = tup->GetMinimum(var.c_str()), max = tup->GetMaximum(var.c_str());
     };
     int bins = bins_;
     if (bins < 0) bins = nBins;
-    TH1F *histogram = new TH1F("h", "h", bins, min, max);
+    TH1F *histogram = new TH1F(var_name, var_name, bins, min, max);
     histogram->Sumw2();
-    tup->Project("h", var.c_str());
+    tup->Project(var_name, var.c_str());
     ofstream file;
     file.open(fileName);
     for (int i = 1; i <= histogram->GetNbinsX(); i++)
@@ -59,7 +60,8 @@ void saveHST(TNtuple *tup, string var, string fileName, double min_ = 1, double 
         " " << setiosflags(ios::scientific) << histogram->GetBinContent(i) / histogram->GetBinWidth(i) <<
         " " << setiosflags(ios::scientific) << histogram->GetBinError(i) / histogram->GetBinWidth(i) << endl;
 
-    histogram->Delete();
+    //histogram->Delete();
+    histogram->Write();
     file.close();
 }
 
