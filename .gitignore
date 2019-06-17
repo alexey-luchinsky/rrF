@@ -10,3 +10,4 @@ avg/
 *.txt
 backup/
 
+/build/
