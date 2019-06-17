@@ -2,9 +2,9 @@
 
 # Short Description
 
-Suppose we have generated some tau -> e anti-nu-e nu-tau decays running the command
+Suppose we have generated some tau -> e anti-nu-e nu-tau decays running the command from build/ directory
 
-   **./simpleEvtGenRO.exe tau- tau_enu.dec 100000**
+   **./simpleEvtGenRO.exe tau- ../src/tau_enu.dec 100000**
 
 Distribution over electron's energy can be extracted by the command
 
@@ -39,8 +39,8 @@ Included files are:
 * src/rrF.cc --- source of the tool
 * src/simpleEvtGenRo.cc --- file to produce ROOT,  taken from EvtGen distribution
 * src/a.for --- empty file needed to link with EvtGen
-* build/evt.pdl (required by simpleEvtGenRo) --- list of the particles,  taken from EvtGen distribution
-* build/tau_enu.dec --- sample decay file
+* src/evt.pdl (required by simpleEvtGenRo) --- list of the particles,  taken from EvtGen distribution
+* src/tau_enu.dec --- sample decay file
 * Find*.cmake --- cmake scripts to find different packages
 
 
