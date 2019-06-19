@@ -1,3 +1,4 @@
+##Test
 MESSAGE("Hello, world")
 IF(DEFINED APPLE)
     MESSAGE("APPLE")
