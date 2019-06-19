@@ -13,7 +13,6 @@ project(directPsi CXX Fortran)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-##smth
 ## include CERN ROOT
 include(FindROOT.cmake)
 MESSAGE(${ROOT_LIBRARIES})
