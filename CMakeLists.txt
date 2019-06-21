@@ -33,7 +33,6 @@ include_directories(~/local/include)
 include_directories(src)
 include_directories(${ROOT_INCLUDE_DIR})
 include_directories(${EVTGEN_INCLUDE_DIR})
-include_directories(/usr/local/Cellar/boost/1.58.0/include/)
 
 include_directories(./)
 include_directories(src/)
