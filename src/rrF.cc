@@ -250,6 +250,10 @@ float calc_var(string var) {
     if (var.substr(0, 4) == "cth_") {
         P = get_mom_from_arg(var, 4);
         return P.Z() / sqrt(P.X() * P.X() + P.Y() * P.Y() + P.Z() * P.Z());
+    } else if (var.substr(0, 4) == "cos_" && var.length()==7) {
+        int ind1 = char_to_ind(var[4]);
+        TLorentzVector p1(fPx[ind1], fPy[ind1], fPz[ind1], fE[ind1]);
+        return p1.M2();
     } else if (var.substr(0, 3) == "pT_" || var.substr(0, 3) == "pt_") {
         P = get_mom_from_arg(var, 3);
         return P.Pt();
