@@ -252,8 +252,11 @@ float calc_var(string var) {
         return P.Z() / sqrt(P.X() * P.X() + P.Y() * P.Y() + P.Z() * P.Z());
     } else if (var.substr(0, 4) == "cos_" && var.length()==7) {
         int ind1 = char_to_ind(var[4]);
-        TLorentzVector p1(fPx[ind1], fPy[ind1], fPz[ind1], fE[ind1]);
-        return p1.M2();
+        int ind2 = char_to_ind(var[6]);
+        double p1 = sqrt(fPx[ind1]*fPx[ind1] + fPy[ind1]*fPy[ind1] + fPz[ind1]*fPz[ind1]);
+        double p2 = sqrt(fPx[ind2]*fPx[ind2] + fPy[ind2]*fPy[ind2] + fPz[ind2]*fPz[ind2]);
+        double p1p2 = fPx[ind1]*fPx[ind2] + fPy[ind1]*fPy[ind2] + fPz[ind1]*fPz[ind2];
+        return p1p2/p1/p2;        
     } else if (var.substr(0, 3) == "pT_" || var.substr(0, 3) == "pt_") {
         P = get_mom_from_arg(var, 3);
         return P.Pt();
