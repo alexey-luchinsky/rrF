@@ -245,18 +245,36 @@ TLorentzVector get_mom_from_arg(string var, int start_pos, int end_pos) {
     return P;
 }
 
+float cos_between(TLorentzVector p1, TLorentzVector p2) {
+    double pp1 = sqrt(p1.Px()*p1.Px()+p1.Py()*p1.Py()+p1.Pz()*p1.Pz());
+    double pp2 = sqrt(p2.Px()*p2.Px()+p2.Py()*p2.Py()+p2.Pz()*p2.Pz());
+    double p1p2 = p1.Px()*p2.Px() + p1.Py()*p2.Py() + p1.Pz()*p2.Pz();
+    return p1p2/pp1/pp2;
+}
+
+void print_vec(string title, TLorentzVector p) {
+    cout<<title<<"={"<<p.E()<<","<<p.Px()<<","<<p.Py()<<","<<p.Pz()<<"}; m="<<p.M()<<";\n";
+}
+
 float calc_var(string var) {
     TLorentzVector P;
     if (var.substr(0, 4) == "cth_") {
         P = get_mom_from_arg(var, 4, var.length());
         return P.Z() / sqrt(P.X() * P.X() + P.Y() * P.Y() + P.Z() * P.Z());
+    } else if (var.substr(0, 5) == "cos0_") {
+    cout << "calc_var: var = "<<var<<endl;
+        size_t pos2 = var.find("_", 6);
+        TLorentzVector mom1 = get_mom_from_arg(var, 5, pos2);
+        print_vec("mom1", mom1);
+        TLorentzVector mom2 = get_mom_from_arg(var, pos2+1, var.length());
+        print_vec("mom2", mom2);
+        mom1.Boost(mom2.BoostVector());
+        print_vec("mom1", mom1);
+        return cos_between(mom1, mom2);
     } else if (var.substr(0, 4) == "cos_" && var.length()==7) {
-        int ind1 = char_to_ind(var[4]);
-        int ind2 = char_to_ind(var[6]);
-        double p1 = sqrt(fPx[ind1]*fPx[ind1] + fPy[ind1]*fPy[ind1] + fPz[ind1]*fPz[ind1]);
-        double p2 = sqrt(fPx[ind2]*fPx[ind2] + fPy[ind2]*fPy[ind2] + fPz[ind2]*fPz[ind2]);
-        double p1p2 = fPx[ind1]*fPx[ind2] + fPy[ind1]*fPy[ind2] + fPz[ind1]*fPz[ind2];
-        return p1p2/p1/p2;        
+        TLorentzVector p1 = get_mom_from_arg(var, 4, 5);
+        TLorentzVector p2 = get_mom_from_arg(var, 6, 7);
+        return cos_between(p1, p2);
     } else if (var.substr(0, 3) == "pT_" || var.substr(0, 3) == "pt_") {
         P = get_mom_from_arg(var, 3, var.length());
         return P.Pt();
