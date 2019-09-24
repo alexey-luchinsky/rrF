@@ -230,9 +230,9 @@ int char_to_ind(char c) {
     return ind;
 }
 
-TLorentzVector get_mom_from_arg(string var, int pos) {
+TLorentzVector get_mom_from_arg(string var, int start_pos, int end_pos) {
     TLorentzVector P, _p;
-    for (int i = pos; i < var.length(); ++i) {
+    for (int i = start_pos; i < end_pos; ++i) {
         float fact = 1;
         if (var[i] == 'm' && i < var.length()) {
             fact = -1;
@@ -248,7 +248,7 @@ TLorentzVector get_mom_from_arg(string var, int pos) {
 float calc_var(string var) {
     TLorentzVector P;
     if (var.substr(0, 4) == "cth_") {
-        P = get_mom_from_arg(var, 4);
+        P = get_mom_from_arg(var, 4, var.length());
         return P.Z() / sqrt(P.X() * P.X() + P.Y() * P.Y() + P.Z() * P.Z());
     } else if (var.substr(0, 4) == "cos_" && var.length()==7) {
         int ind1 = char_to_ind(var[4]);
@@ -258,17 +258,17 @@ float calc_var(string var) {
         double p1p2 = fPx[ind1]*fPx[ind2] + fPy[ind1]*fPy[ind2] + fPz[ind1]*fPz[ind2];
         return p1p2/p1/p2;        
     } else if (var.substr(0, 3) == "pT_" || var.substr(0, 3) == "pt_") {
-        P = get_mom_from_arg(var, 3);
+        P = get_mom_from_arg(var, 3, var.length());
         return P.Pt();
     } else if (var.substr(0, 2) == "E_" || var.substr(0, 2) == "e_") {
-        P = get_mom_from_arg(var, 2);
+        P = get_mom_from_arg(var, 2, var.length());
         return P.E();
     } else if (var.substr(0, 3) == "m2_") {
-        P = get_mom_from_arg(var, 3);
+        P = get_mom_from_arg(var, 3, var.length());
         return P.M2();
     } else if (var.substr(0, 2) == "m_") {
         TLorentzVector P, _p;
-        P = get_mom_from_arg(var, 2);
+        P = get_mom_from_arg(var, 2, var.length());
         return P.M();
     } else if (var.substr(0, 3) == "id_") {
         int ind = char_to_ind(var[3]);
