@@ -14,6 +14,7 @@
 #include "TLorentzVector.h"
 #include "EvtGenBase/EvtPDL.hh"
 #include "EvtGenBase/EvtId.hh"
+#include "EvtGenBase/EvtVector4R.hh"
 
 using namespace TCLAP;
 using namespace std;
@@ -65,42 +66,42 @@ void saveHST(TNtuple *tup, string var, string fileName, double min_ = 1, double 
     file.close();
 }
 
-vector<string> split_string(string str, string sep){
-    char* cstr=const_cast<char*>(str.c_str());
+vector<string> split_string(string str, string sep) {
+    char* cstr = const_cast<char*> (str.c_str());
     char* current;
     vector<std::string> arr;
-    current=strtok(cstr,sep.c_str());
-    while(current != NULL){
+    current = strtok(cstr, sep.c_str());
+    while (current != NULL) {
         arr.push_back(current);
-        current=strtok(NULL, sep.c_str());
+        current = strtok(NULL, sep.c_str());
     }
     return arr;
 }
 
 void add_var(string var) {
     string v = var;
-    v = regex_replace(v, regex("\\("),":");
-    v = regex_replace(v, regex("\\)"),":");
+    v = regex_replace(v, regex("\\("), ":");
+    v = regex_replace(v, regex("\\)"), ":");
     vector<string> vv = split_string(v, ":");
-    cout<<"vv]="<<vv.size()<<endl;
+    cout << "vv]=" << vv.size() << endl;
     // read var name
-    if(vv.size()<1) {
-        cout<<"WR0NG variable "<<var<<"!"<<endl;
+    if (vv.size() < 1) {
+        cout << "WR0NG variable " << var << "!" << endl;
     } else vars.push_back(vv[0]);
     // read nbins
-    if(vv.size()<2) {
+    if (vv.size() < 2) {
         nbins_list.push_back(-1);
     } else {
         nbins_list.push_back(atoi(vv[1].c_str()));
     };
     // read min
-    if(vv.size()<3) {
+    if (vv.size() < 3) {
         min_list.push_back(1);
     } else {
         min_list.push_back(atof(vv[2].c_str()));
     };
     // read max
-    if(vv.size()<4) {
+    if (vv.size() < 4) {
         max_list.push_back(0);
     } else {
         max_list.push_back(atof(vv[3].c_str()));
@@ -115,7 +116,7 @@ void read_hst_args(vector<string> vars_) {
             v = std::regex_replace(v, std::regex("\\["), "");
             v = std::regex_replace(v, std::regex("\\]"), "");
             cout << "LIST OF ARGS" << endl;
-            
+
             string delim = ",";
             size_t prev = 0, pos = 0;
             do {
@@ -131,14 +132,13 @@ void read_hst_args(vector<string> vars_) {
     };
 }
 
-
 void read_args(int argc, char **argv) {
     try {
         TCLAP::CmdLine cmd("Reads ROOT file", ' ', "0.1");
         ValueArg<string> inFileName_arg("i", "in", "input ROOT file", false, "evtOutput.root", "string", cmd);
         ValueArg<string> outFileName_arg("o", "out", "output ROOT file", false, "out.root", "string", cmd);
         MultiArg<string> vars_arg("v", "var", "variable to be saved, e.g. m2_12. "
-        "You can also specify number of bins, min and max values like m2_12(10, 1.2, 2.9)", true, "string", cmd);
+                "You can also specify number of bins, min and max values like m2_12(10, 1.2, 2.9)", true, "string", cmd);
         ValueArg<float> nev_arg("n", "nev", "Number of events to be read (negative if all events should be read)", false, -1, "float", cmd);
         SwitchArg print_ids_arg("p", "print-ids", "should we print ids of the particles", false);
         cmd.add(print_ids_arg);
@@ -168,17 +168,17 @@ void read_args(int argc, char **argv) {
         cout << vars[i] << " ";
     };
     cout << "]" << endl;
-    cout<<"\t nBins_list=[";
+    cout << "\t nBins_list=[";
     for (int i = 0; i < nbins_list.size(); ++i) {
         cout << nbins_list[i] << " ";
     };
     cout << "]" << endl;
-    cout<<"\t min_list=[";
+    cout << "\t min_list=[";
     for (int i = 0; i < min_list.size(); ++i) {
         cout << min_list[i] << " ";
     };
     cout << "]" << endl;
-    cout<<"\t max_list=[";
+    cout << "\t max_list=[";
     for (int i = 0; i < max_list.size(); ++i) {
         cout << max_list[i] << " ";
     };
@@ -230,8 +230,8 @@ int char_to_ind(char c) {
     return ind;
 }
 
-TLorentzVector get_mom_from_arg(string var, int start_pos, int end_pos) {
-    TLorentzVector P, _p;
+EvtVector4R get_mom_from_arg(string var, int start_pos, int end_pos) {
+    EvtVector4R P, _p;
     for (int i = start_pos; i < end_pos; ++i) {
         float fact = 1;
         if (var[i] == 'm' && i < var.length()) {
@@ -239,55 +239,57 @@ TLorentzVector get_mom_from_arg(string var, int start_pos, int end_pos) {
             ++i;
         }
         int ind = char_to_ind(var[i]);
-        _p.SetXYZT(fPx[ind], fPy[ind], fPz[ind], fE[ind]);
+        _p.set(fE[ind], fPx[ind], fPy[ind], fPz[ind]);
         P += fact*_p;
     };
     return P;
 }
 
-float cos_between(TLorentzVector p1, TLorentzVector p2) {
-    double pp1 = sqrt(p1.Px()*p1.Px()+p1.Py()*p1.Py()+p1.Pz()*p1.Pz());
-    double pp2 = sqrt(p2.Px()*p2.Px()+p2.Py()*p2.Py()+p2.Pz()*p2.Pz());
-    double p1p2 = p1.Px()*p2.Px() + p1.Py()*p2.Py() + p1.Pz()*p2.Pz();
-    return p1p2/pp1/pp2;
+double cos_between(EvtVector4R p1, EvtVector4R p2) {
+    double mag1 = 0, mag2 = 0, p1p2 = 0;
+    for (int i = 1; i <= 3; ++i) {
+        mag1 += p1.get(i) * p1.get(i);
+        mag2 += p2.get(i) * p2.get(i);
+        p1p2 += p1.get(i) * p2.get(i);
+    }
+    return p1p2 / sqrt(mag1) / sqrt(mag2);
 }
 
-void print_vec(string title, TLorentzVector p) {
-    cout<<title<<"={"<<p.E()<<","<<p.Px()<<","<<p.Py()<<","<<p.Pz()<<"}; m="<<p.M()<<";\n";
+void print_vec(std::string title, EvtVector4R k) {
+    cout << title << "=" << k << "; m = " << k.mass() << ";\n";
 }
 
 float calc_var(string var) {
-    TLorentzVector P;
+    EvtVector4R P;
     if (var.substr(0, 4) == "cth_") {
         P = get_mom_from_arg(var, 4, var.length());
-        return P.Z() / sqrt(P.X() * P.X() + P.Y() * P.Y() + P.Z() * P.Z());
+        return P.get(3) / sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2) + P.get(3) * P.get(3));
     } else if (var.substr(0, 5) == "cos0_") {
-    cout << "calc_var: var = "<<var<<endl;
+        //        cout << "calc_var: var = " << var << endl;
         size_t pos2 = var.find("_", 6);
-        TLorentzVector mom1 = get_mom_from_arg(var, 5, pos2);
-        print_vec("mom1", mom1);
-        TLorentzVector mom2 = get_mom_from_arg(var, pos2+1, var.length());
-        print_vec("mom2", mom2);
-        mom1.Boost(mom2.BoostVector());
-        print_vec("mom1", mom1);
-        return cos_between(mom1, mom2);
-    } else if (var.substr(0, 4) == "cos_" && var.length()==7) {
-        TLorentzVector p1 = get_mom_from_arg(var, 4, 5);
-        TLorentzVector p2 = get_mom_from_arg(var, 6, 7);
+        EvtVector4R k1 = get_mom_from_arg(var, 5, pos2);
+//        print_vec("mom1", k1);
+        EvtVector4R k2 = get_mom_from_arg(var, pos2 + 1, var.length());
+//        print_vec("mom2", k2);
+        EvtVector4R k10 = k1;
+        k10.applyBoostTo(k2, true);
+        return  cos_between(k2, k10);
+    } else if (var.substr(0, 4) == "cos_" && var.length() == 7) {
+        EvtVector4R p1 = get_mom_from_arg(var, 4, 5);
+        EvtVector4R p2 = get_mom_from_arg(var, 6, 7);
         return cos_between(p1, p2);
     } else if (var.substr(0, 3) == "pT_" || var.substr(0, 3) == "pt_") {
         P = get_mom_from_arg(var, 3, var.length());
-        return P.Pt();
+        return sqrt(P.get(1)*P.get(1)+P.get(2)*P.get(2));
     } else if (var.substr(0, 2) == "E_" || var.substr(0, 2) == "e_") {
         P = get_mom_from_arg(var, 2, var.length());
-        return P.E();
+        return P.get(0);
     } else if (var.substr(0, 3) == "m2_") {
         P = get_mom_from_arg(var, 3, var.length());
-        return P.M2();
+        return P.mass2();
     } else if (var.substr(0, 2) == "m_") {
-        TLorentzVector P, _p;
         P = get_mom_from_arg(var, 2, var.length());
-        return P.M();
+        return P.mass();
     } else if (var.substr(0, 3) == "id_") {
         int ind = char_to_ind(var[3]);
         return pdgID[ind];
