@@ -83,8 +83,7 @@ void add_var(string var) {
     v = regex_replace(v, regex("\\("), ":");
     v = regex_replace(v, regex("\\)"), ":");
     vector<string> vv = split_string(v, ":");
-    cout << "vv]=" << vv.size() << endl;
-    // read var name
+http://tclap.sourceforge.net/    // read var name
     if (vv.size() < 1) {
         cout << "WR0NG variable " << var << "!" << endl;
     } else vars.push_back(vv[0]);
@@ -134,7 +133,7 @@ void read_hst_args(vector<string> vars_) {
 
 void read_args(int argc, char **argv) {
     try {
-        TCLAP::CmdLine cmd("Reads ROOT file", ' ', "0.1");
+        TCLAP::CmdLine cmd("Reads ROOT file\n (c) Alexey Luchinsky", ' ', "0.1");
         ValueArg<string> inFileName_arg("i", "in", "input ROOT file", false, "evtOutput.root", "string", cmd);
         ValueArg<string> outFileName_arg("o", "out", "output ROOT file", false, "out.root", "string", cmd);
         MultiArg<string> vars_arg("v", "var", "variable to be saved, e.g. m2_12. "
@@ -311,6 +310,7 @@ void read_event(TNtuple *tup, int iEv) {
 }
 
 int main(int argc, char **argv) {
+    cout<<"rrf.exe, (c) Alexey Luchinsky"<<endl;
     read_args(argc, argv);
 
     EvtPDL pdl;
