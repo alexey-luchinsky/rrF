@@ -1,5 +1,7 @@
 **rrF** (from ReadRootFile) tool helps the user to read ROOT files created by EvtGen program _simpleEvtGenRO_
 
+(c) Alexey Luchinsky
+
 # Short Description
 
 Suppose we have generated some tau -> e anti-nu-e nu-tau decays running the command from build/ directory
