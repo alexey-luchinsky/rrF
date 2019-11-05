@@ -189,6 +189,7 @@ void read_args(int argc, char **argv) {
     cout << "\t print_ids = " << print_ids << endl;
     cout << "\t save_hst = " << save_hst << endl;
     cout << "\t nBins = " << nBins << endl;
+    cout << "\t evt_pdl_path = " << evt_pdl_path << endl;
 }
 
 void init_input_fields(TTree *ntp) {
