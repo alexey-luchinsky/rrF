@@ -23,6 +23,7 @@ using namespace std;
 vector<string> vars;
 vector<float> min_list, max_list;
 vector<int> nbins_list;
+string evt_pdl_path;
 
 
 // command line parameters
@@ -138,6 +139,7 @@ void read_args(int argc, char **argv) {
         ValueArg<string> outFileName_arg("o", "out", "output ROOT file", false, "out.root", "string", cmd);
         MultiArg<string> vars_arg("v", "var", "variable to be saved, e.g. m2_12. "
                 "You can also specify number of bins, min and max values like m2_12(10, 1.2, 2.9)", true, "string", cmd);
+        ValueArg<string> evt_pdl_path_arg("e","evt_pdl", "evt.pdl file", false, "evt.pdl", "string", cmd);
         ValueArg<float> nev_arg("n", "nev", "Number of events to be read (negative if all events should be read)", false, -1, "float", cmd);
         SwitchArg print_ids_arg("p", "print-ids", "should we print ids of the particles", false);
         cmd.add(print_ids_arg);
@@ -152,6 +154,7 @@ void read_args(int argc, char **argv) {
         save_hst = save_hst_arg.getValue();
         nBins = nBins_arg.getValue();
         nev = (int) nev_arg.getValue();
+        evt_pdl_path = evt_pdl_path_arg.getValue();
 
         // reading the vars list
         read_hst_args(vars_arg.getValue());
@@ -186,6 +189,7 @@ void read_args(int argc, char **argv) {
     cout << "\t print_ids = " << print_ids << endl;
     cout << "\t save_hst = " << save_hst << endl;
     cout << "\t nBins = " << nBins << endl;
+    cout << "\t evt_pdl_path = " << evt_pdl_path << endl;
 }
 
 void init_input_fields(TTree *ntp) {
@@ -314,7 +318,7 @@ int main(int argc, char **argv) {
     read_args(argc, argv);
 
     EvtPDL pdl;
-    pdl.read("evt.pdl");
+    pdl.read(evt_pdl_path.c_str());
 
     TFile *in_file = new TFile(inFileName.c_str(), "READ");
     TFile *out_file = new TFile(outFileName.c_str(), "RECREATE");
