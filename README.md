@@ -26,7 +26,10 @@ Variables to be saved can be specified using argument **-v**. It's general forma
   * "m" --- mass of the particles system 
   * "m2" --- squared mass
   * "pT" --- transvers momentum
-  * "e" --- energy
+  * "px" --- x-component of the momentum 
+  * "py" --- y-component of the momentum 
+  * "pz" --- z-component of the momentum 
+  * "e" --- energy 
   * "cth" -- Cotangence
   * id --- PDG identification number
   * alternatively you can use var 'cos\_i\_j', where i and j are the
