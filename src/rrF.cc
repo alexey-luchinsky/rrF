@@ -363,10 +363,13 @@ int main(int argc, char **argv) {
     fields.pop_back();
     TNtuple *tup = new TNtuple("tup", "tup", fields.c_str());
 
+    int passed = 0;
     for (int iEv = 0; iEv < nEv; ++iEv) {
         ntp->GetEvent(iEv);
         if (iEv % (nEv / 10) == 0) cout << " iEv=" << iEv << endl;
-        read_event(tup, iEv);
+        if(read_event(tup, iEv)) {
+            passed++;
+        };
         if (print_ids) {
             for (int id = 0; id < nTrk; ++id) {
                 cout << id << ":" << EvtPDL::name(EvtPDL::evtIdFromLundKC(pdgID[id])) << " ";
@@ -389,6 +392,6 @@ int main(int argc, char **argv) {
     for(auto & c : cuts) {
         delete c;
     }
-
+    cout << passed << " events (" << 100.*passed/nEv << ") passed the cuts " <<endl;
     return 0;
 }
