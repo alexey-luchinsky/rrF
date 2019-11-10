@@ -24,6 +24,8 @@ void ReplaceStringInPlace(std::string& subject, const std::string& search,
     }
 }
 
+
+
 cut::cut(std::string s) {
     string _s = s;
     ReplaceStringInPlace(_s,">"," > ");

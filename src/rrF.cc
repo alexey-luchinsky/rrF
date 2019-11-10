@@ -6,7 +6,6 @@
 
 #include "tclap/CmdLine.h"
 #include <iostream>
-#include <regex>
 #include <fstream>
 #include "TFile.h"
 #include "TNtuple.h"
@@ -85,8 +84,8 @@ vector<string> split_string(string str, string sep) {
 
 void add_var(string var) {
     string v = var;
-    v = regex_replace(v, regex("\\("), ":");
-    v = regex_replace(v, regex("\\)"), ":");
+    ReplaceStringInPlace(v, "(",":");
+    ReplaceStringInPlace(v, ")", ":");
     vector<string> vv = split_string(v, ":");
     // read var name
     if (vv.size() < 1) {
@@ -116,9 +115,9 @@ void read_hst_args(vector<string> vars_) {
     for (int iv = 0; iv < vars_.size(); iv++) {
         auto v = vars_[iv];
         if (v[0] == '[' && v[v.length() - 1] == ']') {
-            v = std::regex_replace(v, std::regex(" "), "");
-            v = std::regex_replace(v, std::regex("\\["), "");
-            v = std::regex_replace(v, std::regex("\\]"), "");
+            ReplaceStringInPlace(v, " ", "");
+            ReplaceStringInPlace(v, "[","");
+            ReplaceStringInPlace(v, "]","");
             cout << "LIST OF ARGS" << endl;
 
             string delim = ",";

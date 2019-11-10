@@ -19,6 +19,7 @@ using namespace std;
 
 float calc_var(std::string var);
 std::vector<std::string> split_string(std::string str, std::string sep);
+void ReplaceStringInPlace(std::string& subject, const std::string& search, const std::string& replace);
 
 /**
  * cut
