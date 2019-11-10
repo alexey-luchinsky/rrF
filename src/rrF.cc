@@ -6,7 +6,6 @@
 
 #include "tclap/CmdLine.h"
 #include <iostream>
-#include <regex>
 #include <fstream>
 #include "TFile.h"
 #include "TNtuple.h"
@@ -15,6 +14,8 @@
 #include "EvtGenBase/EvtPDL.hh"
 #include "EvtGenBase/EvtId.hh"
 #include "EvtGenBase/EvtVector4R.hh"
+#include "cut.h"
+
 
 using namespace TCLAP;
 using namespace std;
@@ -25,6 +26,8 @@ vector<float> min_list, max_list;
 vector<int> nbins_list;
 string evt_pdl_path;
 
+// cuts
+vector<cut*> cuts;
 
 // command line parameters
 string inFileName, outFileName;
@@ -81,10 +84,10 @@ vector<string> split_string(string str, string sep) {
 
 void add_var(string var) {
     string v = var;
-    v = regex_replace(v, regex("\\("), ":");
-    v = regex_replace(v, regex("\\)"), ":");
+    ReplaceStringInPlace(v, "(",":");
+    ReplaceStringInPlace(v, ")", ":");
     vector<string> vv = split_string(v, ":");
-http://tclap.sourceforge.net/    // read var name
+    // read var name
     if (vv.size() < 1) {
         cout << "WR0NG variable " << var << "!" << endl;
     } else vars.push_back(vv[0]);
@@ -112,9 +115,9 @@ void read_hst_args(vector<string> vars_) {
     for (int iv = 0; iv < vars_.size(); iv++) {
         auto v = vars_[iv];
         if (v[0] == '[' && v[v.length() - 1] == ']') {
-            v = std::regex_replace(v, std::regex(" "), "");
-            v = std::regex_replace(v, std::regex("\\["), "");
-            v = std::regex_replace(v, std::regex("\\]"), "");
+            ReplaceStringInPlace(v, " ", "");
+            ReplaceStringInPlace(v, "[","");
+            ReplaceStringInPlace(v, "]","");
             cout << "LIST OF ARGS" << endl;
 
             string delim = ",";
@@ -146,6 +149,7 @@ void read_args(int argc, char **argv) {
         SwitchArg save_hst_arg("s", "save", "Should we save histograms as text files?", false);
         cmd.add(save_hst_arg);
         ValueArg<int> nBins_arg("b", "bins", "Number of bins in the histogrm", false, 50, "int", cmd);
+        MultiArg<string> cuts_arg("c", "cut","cuts", false, "", cmd);
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
@@ -158,6 +162,12 @@ void read_args(int argc, char **argv) {
 
         // reading the vars list
         read_hst_args(vars_arg.getValue());
+        
+        // reading cuts
+        vector<string> cuts_string = cuts_arg.getValue();
+        for( string s : cuts_string) {
+            cuts.push_back(new cut(s));
+        }
     } catch (ArgException &e) {
         cerr << "error: " << e.error() << " at arg=" << e.argId() << endl;
     };
@@ -190,6 +200,7 @@ void read_args(int argc, char **argv) {
     cout << "\t save_hst = " << save_hst << endl;
     cout << "\t nBins = " << nBins << endl;
     cout << "\t evt_pdl_path = " << evt_pdl_path << endl;
+    cout << "\t number of cuts: " << cuts.size() << endl;
 }
 
 void init_input_fields(TTree *ntp) {
@@ -313,13 +324,19 @@ float calc_var(string var) {
     }
 }
 
-void read_event(TNtuple *tup, int iEv) {
+bool read_event(TNtuple *tup, int iEv) {
+    for(cut* c : cuts) {
+        if(! c->is_ok()) {
+            return false;
+        }
+    };
     vector<float> values;
     for (int i = 0; i < vars.size(); ++i) {
         float x = calc_var(vars[i]);
         values.push_back(x);
     };
     tup->Fill(values.data());
+    return true;
 }
 
 int main(int argc, char **argv) {
@@ -345,10 +362,13 @@ int main(int argc, char **argv) {
     fields.pop_back();
     TNtuple *tup = new TNtuple("tup", "tup", fields.c_str());
 
+    int passed = 0;
     for (int iEv = 0; iEv < nEv; ++iEv) {
         ntp->GetEvent(iEv);
         if (iEv % (nEv / 10) == 0) cout << " iEv=" << iEv << endl;
-        read_event(tup, iEv);
+        if(read_event(tup, iEv)) {
+            passed++;
+        };
         if (print_ids) {
             for (int id = 0; id < nTrk; ++id) {
                 cout << id << ":" << EvtPDL::name(EvtPDL::evtIdFromLundKC(pdgID[id])) << " ";
@@ -366,6 +386,11 @@ int main(int argc, char **argv) {
     tup->Write();
     out_file->Close();
     in_file->Close();
-
+    
+    // delete cuts
+    for(auto & c : cuts) {
+        delete c;
+    }
+    cout << passed << " events (" << 100.*passed/nEv << ") passed the cuts " <<endl;
     return 0;
 }

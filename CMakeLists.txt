@@ -2,8 +2,8 @@
 MESSAGE("Hello, world")
 IF(DEFINED APPLE)
     MESSAGE("APPLE")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 ENDIF(DEFINED APPLE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "")
 INCLUDE(SetCompileFlag.cmake)
@@ -41,7 +41,7 @@ include_directories(src/)
 
 
 #adding sources for rrF.exe
-add_executable (rrF.exe "src/rrF.cc")
+add_executable (rrF.exe "src/rrF.cc" "src/cut.cc")
 target_link_libraries(rrF.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/libEvtGen.a)
 
 #adding sources for simpleEvtGenRO.exe
