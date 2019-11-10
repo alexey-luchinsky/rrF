@@ -88,7 +88,7 @@ void add_var(string var) {
     v = regex_replace(v, regex("\\("), ":");
     v = regex_replace(v, regex("\\)"), ":");
     vector<string> vv = split_string(v, ":");
-http://tclap.sourceforge.net/    // read var name
+    // read var name
     if (vv.size() < 1) {
         cout << "WR0NG variable " << var << "!" << endl;
     } else vars.push_back(vv[0]);

@@ -15,8 +15,10 @@
 #define CUT_H
 
 #include <iostream>
+using namespace std;
 
 float calc_var(std::string var);
+std::vector<std::string> split_string(std::string str, std::string sep);
 
 /**
  * cut
@@ -36,7 +38,7 @@ public:
     bool is_ok();
 private:
     std::string var;
-    char operation;
+    string operation;
     double value;
 };
 
