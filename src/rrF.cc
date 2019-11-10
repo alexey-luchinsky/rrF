@@ -15,6 +15,8 @@
 #include "EvtGenBase/EvtPDL.hh"
 #include "EvtGenBase/EvtId.hh"
 #include "EvtGenBase/EvtVector4R.hh"
+#include "cut.h"
+
 
 using namespace TCLAP;
 using namespace std;
