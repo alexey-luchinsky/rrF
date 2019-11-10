@@ -15,8 +15,20 @@
 
 #include "cut.h"
 
+void ReplaceStringInPlace(std::string& subject, const std::string& search,
+                          const std::string& replace) {
+    size_t pos = 0;
+    while ((pos = subject.find(search, pos)) != std::string::npos) {
+         subject.replace(pos, search.length(), replace);
+         pos += replace.length();
+    }
+}
+
 cut::cut(std::string s) {
-    vector<string> args = split_string(s, " ");
+    string _s = s;
+    ReplaceStringInPlace(_s,">"," > ");
+    ReplaceStringInPlace(_s,"<"," < ");
+    vector<string> args = split_string(_s, " ");
     if(args.size() != 3) {
         cout<<" WRONG FORMAT of the cut " << s << "!" << endl;
         return;
