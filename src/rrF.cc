@@ -325,13 +325,19 @@ float calc_var(string var) {
     }
 }
 
-void read_event(TNtuple *tup, int iEv) {
+bool read_event(TNtuple *tup, int iEv) {
+    for(cut* c : cuts) {
+        if(! c->is_ok()) {
+            return false;
+        }
+    };
     vector<float> values;
     for (int i = 0; i < vars.size(); ++i) {
         float x = calc_var(vars[i]);
         values.push_back(x);
     };
     tup->Fill(values.data());
+    return true;
 }
 
 int main(int argc, char **argv) {

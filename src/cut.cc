@@ -14,6 +14,9 @@
 #include "cut.h"
 
 cut::cut(std::string s) {
+    var = "e_1";
+    operation = '>';
+    value = 0.5;
 }
 
 cut::cut(const cut& orig) {
@@ -23,6 +26,15 @@ cut::~cut() {
 }
 
 bool cut::is_ok() {
-    return true;
+    float v = calc_var(var);
+    if(operation == '>') {
+        return v > value;
+    }
+    else if(operation == '<') {
+        return v < value;
+    }
+    else {
+        return true;
+    }
 }
 

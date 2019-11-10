@@ -16,6 +16,7 @@
 
 #include <iostream>
 
+float calc_var(std::string var);
 
 /**
  * cut
@@ -34,7 +35,9 @@ public:
      */
     bool is_ok();
 private:
-
+    std::string var;
+    char operation;
+    double value;
 };
 
 #endif /* CUT_H */
