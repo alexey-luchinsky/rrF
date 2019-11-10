@@ -13,12 +13,16 @@
 
 #include "cut.h"
 
-cut::cut() {
+cut::cut(std::string s) {
 }
 
 cut::cut(const cut& orig) {
 }
 
 cut::~cut() {
+}
+
+bool cut::is_ok() {
+    return true;
 }
 

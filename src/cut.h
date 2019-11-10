@@ -14,6 +14,9 @@
 #ifndef CUT_H
 #define CUT_H
 
+#include <iostream>
+
+
 /**
  * cut
  * 
@@ -21,7 +24,7 @@
  */
 class cut {
 public:
-    cut();
+    cut(std::string s);
     cut(const cut& orig);
     virtual ~cut();
     
