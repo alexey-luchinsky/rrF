@@ -14,6 +14,7 @@ MESSAGE(STATUS "Looking for EvtGen ...")
 FIND_PATH(EVTGEN_INCLUDE_DIR NAMES EvtGen/EvtGen.hh PATHS
   ${SIMPATH}/include/EvtGen
   /Users/luchinsky/Work/EvtGen/R01-06-00/
+ /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/R01-06-00/
   NO_DEFAULT_PATH
 )
 
@@ -21,6 +22,7 @@ FIND_PATH(EVTGEN_INCLUDE_DIR NAMES EvtGen/EvtGen.hh PATHS
 FIND_PATH(EVTGEN_LIBRARY_DIR NAMES libEvtGen.so PATHS
   ${SIMPATH}/lib
   /Users/luchinsky/Work/EvtGen/R01-06-00/lib/
+ /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/R01-06-00/lib/
   NO_DEFAULT_PATH
 )
 
