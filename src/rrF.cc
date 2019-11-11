@@ -84,7 +84,7 @@ vector<string> split_string(string str, string sep) {
 
 void add_var(string var) {
     string v = var;
-    ReplaceStringInPlace(v, "(",":");
+    ReplaceStringInPlace(v, "(", ":");
     ReplaceStringInPlace(v, ")", ":");
     vector<string> vv = split_string(v, ":");
     // read var name
@@ -116,8 +116,8 @@ void read_hst_args(vector<string> vars_) {
         auto v = vars_[iv];
         if (v[0] == '[' && v[v.length() - 1] == ']') {
             ReplaceStringInPlace(v, " ", "");
-            ReplaceStringInPlace(v, "[","");
-            ReplaceStringInPlace(v, "]","");
+            ReplaceStringInPlace(v, "[", "");
+            ReplaceStringInPlace(v, "]", "");
             cout << "LIST OF ARGS" << endl;
 
             string delim = ",";
@@ -142,14 +142,14 @@ void read_args(int argc, char **argv) {
         ValueArg<string> outFileName_arg("o", "out", "output ROOT file", false, "out.root", "string", cmd);
         MultiArg<string> vars_arg("v", "var", "variable to be saved, e.g. m2_12. "
                 "You can also specify number of bins, min and max values like m2_12(10, 1.2, 2.9)", true, "string", cmd);
-        ValueArg<string> evt_pdl_path_arg("e","evt_pdl", "evt.pdl file", false, "evt.pdl", "string", cmd);
+        ValueArg<string> evt_pdl_path_arg("e", "evt_pdl", "evt.pdl file", false, "evt.pdl", "string", cmd);
         ValueArg<float> nev_arg("n", "nev", "Number of events to be read (negative if all events should be read)", false, -1, "float", cmd);
         SwitchArg print_ids_arg("p", "print-ids", "should we print ids of the particles", false);
         cmd.add(print_ids_arg);
         SwitchArg save_hst_arg("s", "save", "Should we save histograms as text files?", false);
         cmd.add(save_hst_arg);
         ValueArg<int> nBins_arg("b", "bins", "Number of bins in the histogrm", false, 50, "int", cmd);
-        MultiArg<string> cuts_arg("c", "cut","cuts", false, "", cmd);
+        MultiArg<string> cuts_arg("c", "cut", "cuts", false, "", cmd);
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
@@ -162,11 +162,18 @@ void read_args(int argc, char **argv) {
 
         // reading the vars list
         read_hst_args(vars_arg.getValue());
-        
+
         // reading cuts
         vector<string> cuts_string = cuts_arg.getValue();
-        for( string s : cuts_string) {
-            cuts.push_back(new cut(s));
+        for (string s : cuts_string) {
+            ReplaceStringInPlace(s, "&", ",");
+            if (s.find(',') != string::npos) {
+                for (string v : split_string(s, ",")) {
+                    cuts.push_back(new cut(v));
+                }
+            } else {
+                cuts.push_back(new cut(s));
+            };
         }
     } catch (ArgException &e) {
         cerr << "error: " << e.error() << " at arg=" << e.argId() << endl;
@@ -201,6 +208,9 @@ void read_args(int argc, char **argv) {
     cout << "\t nBins = " << nBins << endl;
     cout << "\t evt_pdl_path = " << evt_pdl_path << endl;
     cout << "\t number of cuts: " << cuts.size() << endl;
+    for (cut *c : cuts) {
+        cout << "|"<<c->get_var()<< "|"<< endl;
+    }
 }
 
 void init_input_fields(TTree *ntp) {
@@ -282,19 +292,19 @@ float calc_var(string var) {
         //        cout << "calc_var: var = " << var << endl;
         size_t pos2 = var.find("_", 6);
         EvtVector4R k1 = get_mom_from_arg(var, 5, pos2);
-//        print_vec("mom1", k1);
+        //        print_vec("mom1", k1);
         EvtVector4R k2 = get_mom_from_arg(var, pos2 + 1, var.length());
-//        print_vec("mom2", k2);
+        //        print_vec("mom2", k2);
         EvtVector4R k10 = k1;
         k10.applyBoostTo(k2, true);
-        return  cos_between(k2, k10);
+        return cos_between(k2, k10);
     } else if (var.substr(0, 4) == "cos_" && var.length() == 7) {
         EvtVector4R p1 = get_mom_from_arg(var, 4, 5);
         EvtVector4R p2 = get_mom_from_arg(var, 6, 7);
         return cos_between(p1, p2);
     } else if (var.substr(0, 3) == "pT_" || var.substr(0, 3) == "pt_") {
         P = get_mom_from_arg(var, 3, var.length());
-        return sqrt(P.get(1)*P.get(1)+P.get(2)*P.get(2));
+        return sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2));
     } else if (var.substr(0, 3) == "px_" || var.substr(0, 3) == "pX_") {
         P = get_mom_from_arg(var, 3, var.length());
         return P.get(1);
@@ -325,8 +335,8 @@ float calc_var(string var) {
 }
 
 bool read_event(TNtuple *tup, int iEv) {
-    for(cut* c : cuts) {
-        if(! c->is_ok()) {
+    for (cut* c : cuts) {
+        if (!c->is_ok()) {
             return false;
         }
     };
@@ -340,7 +350,7 @@ bool read_event(TNtuple *tup, int iEv) {
 }
 
 int main(int argc, char **argv) {
-    cout<<"rrf.exe, (c) Alexey Luchinsky"<<endl;
+    cout << "rrf.exe, (c) Alexey Luchinsky" << endl;
     read_args(argc, argv);
 
     EvtPDL pdl;
@@ -366,7 +376,7 @@ int main(int argc, char **argv) {
     for (int iEv = 0; iEv < nEv; ++iEv) {
         ntp->GetEvent(iEv);
         if (iEv % (nEv / 10) == 0) cout << " iEv=" << iEv << endl;
-        if(read_event(tup, iEv)) {
+        if (read_event(tup, iEv)) {
             passed++;
         };
         if (print_ids) {
@@ -386,11 +396,11 @@ int main(int argc, char **argv) {
     tup->Write();
     out_file->Close();
     in_file->Close();
-    
+
     // delete cuts
-    for(auto & c : cuts) {
+    for (auto & c : cuts) {
         delete c;
     }
-    cout << passed << " events (" << 100.*passed/nEv << ") passed the cuts " <<endl;
+    cout << passed << " events (" << 100. * passed / nEv << ") passed the cuts " << endl;
     return 0;
 }

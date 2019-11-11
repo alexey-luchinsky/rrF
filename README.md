@@ -6,17 +6,17 @@
 
 Suppose we have generated some tau -> e anti-nu-e nu-tau decays running the command from build/ directory
 
-   **./simpleEvtGenRO.exe tau- ../src/tau_enu.dec 100000**
+    ./simpleEvtGenRO.exe tau- ../src/tau_enu.dec 100000
 
 Distribution over electron's energy can be extracted by the command
 
-   **./rrF.exe -i evtOutput.root -o out.root -v e_1**
+    ./rrF.exe -i evtOutput.root -o out.root -v e_1
 
 # Long Description
 
 This tool is rather flexible and can be run with varios command line arguments. The list of these arguments can be obtained with the command
 
-   **./rrF.exe -h**
+    ./rrF.exe -h
 
 Almost all arguments are self-explainable, so we will say some words about variables specification only.
 
@@ -40,11 +40,26 @@ Variables to be saved can be specified using argument **-v**. It's general forma
 
 Several histograms can be saved either by giving "-v" arguments more than once, or in the list form like **-v "[m2_12, pT_3]"
 
+You can also impose some cuts on the listed above variables. This can be done by specifying -c (or --cuts) argument. For example,
+
+    ./rrF.exe -v E_1 -c "E_2<0.3"
+
+means that the energy of the 2nd particle should be smaller than 0.3 GeV. The allowed operations are ">" and ">". All listed above variables can be used, but keep in mind that the variable should be on the left hand side of the comparison (i.e. "E_1<0.3" is OK, but "0.3>E_1" is wrong). You can combine (logical AND) several cuts by supplying several -c switches or by joining then with "&" operator. As a result,
+
+    ./rrF.exe -v E_1 -c "E_2<0.3" -c "E_2>0.1"
+
+and
+
+    ./rrF.exe -v E_1 -c "E_2<0.3 & E_2>0.1"
+
+will have the same effect.
+
 # Files and Installation
 
 Included files are:
 
 * src/rrF.cc --- source of the tool
+* src/cut.cc, src/cut.h --- class that decribes the cut on the variable
 * src/simpleEvtGenRo.cc --- file to produce ROOT,  taken from EvtGen distribution
 * src/a.for --- empty file needed to link with EvtGen
 * src/evt.pdl (required by simpleEvtGenRo) --- list of the particles,  taken from EvtGen distribution

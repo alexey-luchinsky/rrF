@@ -31,7 +31,11 @@ public:
     cut(std::string s);
     cut(const cut& orig);
     virtual ~cut();
-    
+
+    string get_var() {
+        return var;
+    }
+
     /**
      * bool is_ok()
      * checks if the current event passes the cut
