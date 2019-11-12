@@ -30,6 +30,7 @@ cut::cut(std::string s) {
     string _s = s;
     ReplaceStringInPlace(_s,">"," > ");
     ReplaceStringInPlace(_s,"<"," < ");
+    ReplaceStringInPlace(_s,"="," = ");
     vector<string> args = split_string(_s, " ");
     if(args.size() != 3) {
         cout<<" WRONG FORMAT of the cut " << s << "!" << endl;
@@ -53,6 +54,9 @@ bool cut::is_ok() {
     }
     else if(operation == "<") {
         return v < value;
+    }
+    else if(operation == "=") {
+        return v == value;
     }
     else {
         return true;
