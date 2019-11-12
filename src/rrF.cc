@@ -329,7 +329,7 @@ float calc_var(string var) {
     } else if (var == "prob") {
         return fProb;
     } else {
-        cout << "Unknown variable " << var << endl;
+        cout << "Unknown variable \" \"" << var << endl;
         ::abort();
     }
 }

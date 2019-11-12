@@ -33,7 +33,7 @@ cut::cut(std::string s) {
     ReplaceStringInPlace(_s,"="," = ");
     ReplaceStringInPlace(_s,"+-"," +- ");
     vector<string> args = split_string(_s, " ");
-    if(args.size() != 3 || args.size() !=5) {
+    if(args.size() != 3 && args.size() !=5) {
         cout<<" WRONG FORMAT of the cut " << s << "!" << endl;
         return;
     };
