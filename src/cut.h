@@ -45,6 +45,7 @@ private:
     std::string var;
     string operation;
     double value;
+    double error;
 };
 
 #endif /* CUT_H */

@@ -31,14 +31,18 @@ cut::cut(std::string s) {
     ReplaceStringInPlace(_s,">"," > ");
     ReplaceStringInPlace(_s,"<"," < ");
     ReplaceStringInPlace(_s,"="," = ");
+    ReplaceStringInPlace(_s,"+-"," +- ");
     vector<string> args = split_string(_s, " ");
-    if(args.size() != 3) {
+    if(args.size() != 3 || args.size() !=5) {
         cout<<" WRONG FORMAT of the cut " << s << "!" << endl;
         return;
     };
     var = args[0];
     operation = args[1];
     value = atof(args[2].c_str());
+    if(operation == "=" && args[3]=="+-") {
+        error = atof(args[4].c_str());
+    }
 }
 
 cut::cut(const cut& orig) {
@@ -56,7 +60,7 @@ bool cut::is_ok() {
         return v < value;
     }
     else if(operation == "=") {
-        return v == value;
+        return value - error < v && v < value + error;
     }
     else {
         return true;
