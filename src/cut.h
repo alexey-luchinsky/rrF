@@ -22,7 +22,7 @@ using namespace std;
 
 std::vector<std::string> split_string(std::string str, std::string sep);
 void ReplaceStringInPlace(std::string& subject, const std::string& search, const std::string& replace);
-float calc_var(RrfEvent event, string var);
+float calc_var(RrfEvent *event, string var);
 
 /**
  * cut
@@ -43,7 +43,7 @@ public:
      * bool is_ok()
      * checks if the current event passes the cut
      */
-    bool is_ok(RrfEvent event);
+    bool is_ok(RrfEvent *event);
 private:
     std::string var;
     string operation;

@@ -51,7 +51,7 @@ cut::cut(const cut& orig) {
 cut::~cut() {
 }
 
-bool cut::is_ok(RrfEvent event) {
+bool cut::is_ok(RrfEvent *event) {
     float v = calc_var(event, var);
     if(operation == ">") {
         return v > value;
