@@ -15,6 +15,7 @@
 #include "EvtGenBase/EvtId.hh"
 #include "EvtGenBase/EvtVector4R.hh"
 #include "cut.h"
+#include "RrfEvent.h"
 
 
 using namespace TCLAP;
@@ -35,15 +36,7 @@ int nev;
 bool print_ids;
 
 // input file fields
-#define MAX 100
-Int_t ev = 0;
-Int_t nLine[MAX], pdgID[MAX], nDau[MAX], nM1[MAX], nM2[MAX], nDF[MAX], nDL[MAX];
-Double_t fPx[MAX], fPy[MAX], fPz[MAX], fE[MAX];
-Double_t fVx[MAX], fVy[MAX], fVz[MAX], fT[MAX];
-Double_t fTht[MAX], fM[MAX], fP[MAX], fPt[MAX];
-Int_t nTrk = 0;
 int nBins;
-Double_t fProb;
 bool save_hst;
 
 void saveHST(TNtuple *tup, string var, string fileName, double min_ = 1, double max_ = -1, int bins_ = -1) {
@@ -213,61 +206,7 @@ void read_args(int argc, char **argv) {
     }
 }
 
-void init_input_fields(TTree *ntp) {
-    cout << "[ntp]=" << ntp->GetEntries() << endl;
 
-    ntp->SetBranchAddress("ev", &ev);
-    ntp->SetBranchAddress("nTrk", &nTrk);
-
-    ntp->SetBranchAddress("N", nLine);
-    ntp->SetBranchAddress("Id", pdgID);
-
-    ntp->SetBranchAddress("M1", nM1);
-    ntp->SetBranchAddress("M2", nM2);
-    ntp->SetBranchAddress("DF", nDF);
-    ntp->SetBranchAddress("DL", nDL);
-    ntp->SetBranchAddress("nDau", nDau);
-
-    ntp->SetBranchAddress("px", fPx);
-    ntp->SetBranchAddress("py", fPy);
-    ntp->SetBranchAddress("pz", fPz);
-    ntp->SetBranchAddress("E", fE);
-
-    ntp->SetBranchAddress("t", fT);
-    ntp->SetBranchAddress("x", fVx);
-    ntp->SetBranchAddress("y", fVy);
-    ntp->SetBranchAddress("z", fVz);
-
-    ntp->SetBranchAddress("m", fM);
-    ntp->SetBranchAddress("p", fP);
-    ntp->SetBranchAddress("pt", fPt);
-    ntp->SetBranchAddress("tht", fTht);
-    ntp->SetBranchAddress("prob", &fProb);
-}
-
-int char_to_ind(char c) {
-    int ind = c - '0';
-    if (ind < 0 || ind >= nTrk) {
-        cout << "wrong particle number " << ind << endl;
-        ::abort();
-    };
-    return ind;
-}
-
-EvtVector4R get_mom_from_arg(string var, int start_pos, int end_pos) {
-    EvtVector4R P, _p;
-    for (int i = start_pos; i < end_pos; ++i) {
-        float fact = 1;
-        if (var[i] == 'm' && i < var.length()) {
-            fact = -1;
-            ++i;
-        }
-        int ind = char_to_ind(var[i]);
-        _p.set(fE[ind], fPx[ind], fPy[ind], fPz[ind]);
-        P += fact*_p;
-    };
-    return P;
-}
 
 double cos_between(EvtVector4R p1, EvtVector4R p2) {
     double mag1 = 0, mag2 = 0, p1p2 = 0;
@@ -283,51 +222,51 @@ void print_vec(std::string title, EvtVector4R k) {
     cout << title << "=" << k << "; m = " << k.mass() << ";\n";
 }
 
-float calc_var(string var) {
+float calc_var(RrfEvent event, string var) {
     EvtVector4R P;
     if (var.substr(0, 4) == "cth_") {
-        P = get_mom_from_arg(var, 4, var.length());
+        P = event.get_mom_from_arg(var, 4, var.length());
         return P.get(3) / sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2) + P.get(3) * P.get(3));
     } else if (var.substr(0, 5) == "cos0_") {
         //        cout << "calc_var: var = " << var << endl;
         size_t pos2 = var.find("_", 6);
-        EvtVector4R k1 = get_mom_from_arg(var, 5, pos2);
+        EvtVector4R k1 = event.get_mom_from_arg(var, 5, pos2);
         //        print_vec("mom1", k1);
-        EvtVector4R k2 = get_mom_from_arg(var, pos2 + 1, var.length());
+        EvtVector4R k2 = event.get_mom_from_arg(var, pos2 + 1, var.length());
         //        print_vec("mom2", k2);
         EvtVector4R k10 = k1;
         k10.applyBoostTo(k2, true);
         return cos_between(k2, k10);
     } else if (var.substr(0, 4) == "cos_" && var.length() == 7) {
-        EvtVector4R p1 = get_mom_from_arg(var, 4, 5);
-        EvtVector4R p2 = get_mom_from_arg(var, 6, 7);
+        EvtVector4R p1 = event.get_mom_from_arg(var, 4, 5);
+        EvtVector4R p2 = event.get_mom_from_arg(var, 6, 7);
         return cos_between(p1, p2);
     } else if (var.substr(0, 3) == "pT_" || var.substr(0, 3) == "pt_") {
-        P = get_mom_from_arg(var, 3, var.length());
+        P = event.get_mom_from_arg(var, 3, var.length());
         return sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2));
     } else if (var.substr(0, 3) == "px_" || var.substr(0, 3) == "pX_") {
-        P = get_mom_from_arg(var, 3, var.length());
+        P = event.get_mom_from_arg(var, 3, var.length());
         return P.get(1);
     } else if (var.substr(0, 3) == "py_" || var.substr(0, 3) == "pY_") {
-        P = get_mom_from_arg(var, 3, var.length());
+        P = event.get_mom_from_arg(var, 3, var.length());
         return P.get(2);
     } else if (var.substr(0, 3) == "pz_" || var.substr(0, 3) == "pZ_") {
-        P = get_mom_from_arg(var, 3, var.length());
+        P = event.get_mom_from_arg(var, 3, var.length());
         return P.get(3);
     } else if (var.substr(0, 2) == "E_" || var.substr(0, 2) == "e_") {
-        P = get_mom_from_arg(var, 2, var.length());
+        P = event.get_mom_from_arg(var, 2, var.length());
         return P.get(0);
     } else if (var.substr(0, 3) == "m2_") {
-        P = get_mom_from_arg(var, 3, var.length());
+        P = event.get_mom_from_arg(var, 3, var.length());
         return P.mass2();
     } else if (var.substr(0, 2) == "m_") {
-        P = get_mom_from_arg(var, 2, var.length());
+        P = event.get_mom_from_arg(var, 2, var.length());
         return P.mass();
     } else if (var.substr(0, 3) == "id_") {
-        int ind = char_to_ind(var[3]);
-        return pdgID[ind];
+        int ind = event.char_to_ind(var[3]);
+        return event.pdgID[ind];
     } else if (var == "prob") {
-        return fProb;
+        return event.fProb;
     } else {
         cout << "Unknown variable \" \"" << var << endl;
         ::abort();
@@ -357,10 +296,11 @@ int main(int argc, char **argv) {
     pdl.read(evt_pdl_path.c_str());
 
     TFile *in_file = new TFile(inFileName.c_str(), "READ");
+    RrfEvent event;
     TFile *out_file = new TFile(outFileName.c_str(), "RECREATE");
 
     TTree *ntp = (TTree*) in_file->Get("ntp");
-    init_input_fields(ntp);
+    event.init_input_fields(ntp);
     int nEv;
     if (nev < 0 || nev > ntp->GetEntries()) nEv = ntp->GetEntries();
     else nEv = nev;
@@ -380,8 +320,8 @@ int main(int argc, char **argv) {
             passed++;
         };
         if (print_ids) {
-            for (int id = 0; id < nTrk; ++id) {
-                cout << id << ":" << EvtPDL::name(EvtPDL::evtIdFromLundKC(pdgID[id])) << " ";
+            for (int id = 0; id < event.nTrk; ++id) {
+                cout << id << ":" << EvtPDL::name(EvtPDL::evtIdFromLundKC(event.pdgID[id])) << " ";
             };
             cout << endl;
         }

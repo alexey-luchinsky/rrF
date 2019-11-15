@@ -13,6 +13,8 @@
 
 #include "RrfEvent.h"
 
+using namespace std;
+
 RrfEvent::RrfEvent() {
 }
 

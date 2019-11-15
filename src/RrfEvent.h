@@ -17,6 +17,8 @@
 #define RRFEVENT_H
 
 #include "TTree.h"
+#include "EvtGenBase/EvtVector4R.hh"
+
 
 #define MAX 100
 
