@@ -273,15 +273,15 @@ float calc_var(RrfEvent event, string var) {
     }
 }
 
-bool read_event(TNtuple *tup, int iEv) {
+bool read_event(RrfEvent event, TNtuple *tup, int iEv) {
     for (cut* c : cuts) {
-        if (!c->is_ok()) {
+        if (!c->is_ok(event)) {
             return false;
         }
     };
     vector<float> values;
     for (int i = 0; i < vars.size(); ++i) {
-        float x = calc_var(vars[i]);
+        float x = calc_var(event, vars[i]);
         values.push_back(x);
     };
     tup->Fill(values.data());
@@ -316,7 +316,7 @@ int main(int argc, char **argv) {
     for (int iEv = 0; iEv < nEv; ++iEv) {
         ntp->GetEvent(iEv);
         if (iEv % (nEv / 10) == 0) cout << " iEv=" << iEv << endl;
-        if (read_event(tup, iEv)) {
+        if (read_event(event, tup, iEv)) {
             passed++;
         };
         if (print_ids) {

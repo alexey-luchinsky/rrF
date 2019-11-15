@@ -59,7 +59,8 @@ void RrfEvent::init_input_fields(TTree *ntp) {
 int RrfEvent::char_to_ind(char c) {
     int ind = c - '0';
     if (ind < 0 || ind >= nTrk) {
-        cout << "wrong particle number " << ind << endl;
+        cout << "wrong particle number " << ind << " with nTrk = " << nTrk << endl;
+        
         ::abort();
     };
     return ind;
