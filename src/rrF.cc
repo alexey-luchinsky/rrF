@@ -16,13 +16,14 @@
 #include "EvtGenBase/EvtVector4R.hh"
 #include "cut.h"
 #include "RrfEvent.h"
+#include "RrfVar.h"
 
 
 using namespace TCLAP;
 using namespace std;
 
 // histogram parameters
-vector<string> vars;
+vector<RrfVar *> vars;
 vector<float> min_list, max_list;
 vector<int> nbins_list;
 string evt_pdl_path;
@@ -83,7 +84,7 @@ void add_var(string var) {
     // read var name
     if (vv.size() < 1) {
         cout << "WR0NG variable " << var << "!" << endl;
-    } else vars.push_back(vv[0]);
+    } else vars.push_back(varFactory(vv[0]));
     // read nbins
     if (vv.size() < 2) {
         nbins_list.push_back(-1);
@@ -279,7 +280,7 @@ bool read_event(RrfEvent *event, TNtuple *tup, int iEv) {
     };
     vector<float> values;
     for (int i = 0; i < vars.size(); ++i) {
-        float x = calc_var(event, vars[i]);
+        float x = vars[i]->getValue(event);
         values.push_back(x);
     };
     tup->Fill(values.data());
@@ -305,7 +306,7 @@ int main(int argc, char **argv) {
 
     string fields = "";
     for (int i = 0; i < vars.size(); ++i) {
-        fields += vars[i] + ":";
+        fields += vars[i]->to_string() + ":";
     };
     fields.pop_back();
     TNtuple *tup = new TNtuple("tup", "tup", fields.c_str());
@@ -327,7 +328,7 @@ int main(int argc, char **argv) {
 
     if (save_hst) {
         for (int i = 0; i < vars.size(); ++i) {
-            saveHST(tup, vars[i], vars[i] + ".txt", min_list[i], max_list[i], nbins_list[i]);
+            saveHST(tup, vars[i]->to_string(), vars[i]->to_string() + ".txt", min_list[i], max_list[i], nbins_list[i]);
         };
     };
 
