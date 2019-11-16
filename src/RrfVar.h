@@ -27,6 +27,8 @@ public:
     virtual string to_string() = 0;
 };
 
+RrfVar *varFactory(string str);
+
 class RrfVarE: public RrfVar {
 public:
     RrfVarE(string _str);

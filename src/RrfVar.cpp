@@ -13,6 +13,16 @@
 
 #include "RrfVar.h"
 
+RrfVar *varFactory(string str) {
+    if (str.substr(0, 2) == "E_" || str.substr(0, 2) == "e_") {
+        return new RrfVarE(str);
+    }
+    else {
+        cout << " varFactory: Unknown variable "<<str<<"!"<<endl;
+        ::abort();
+    }
+}
+
 RrfVarE::RrfVarE(string _str) {
     var = _str;
 }
