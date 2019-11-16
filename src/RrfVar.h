@@ -14,13 +14,26 @@
 #ifndef RRFVAR_H
 #define RRFVAR_H
 
+
+#include "RrfEvent.h"
+using namespace std;
+
 class RrfVar {
 public:
-    RrfVar();
-    RrfVar(const RrfVar& orig);
-    virtual ~RrfVar();
-private:
+    RrfVar() {};
+    RrfVar(const RrfVar& orig) {};
+    virtual ~RrfVar() {};
+    virtual float getValue(RrfEvent *event) = 0;
+    virtual string to_string() = 0;
+};
 
+class RrfVarE: public RrfVar {
+public:
+    RrfVarE(string _str);
+    string to_string();
+    float getValue(RrfEvent *event);
+private:
+    string var;
 };
 
 #endif /* RRFVAR_H */

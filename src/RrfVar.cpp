@@ -13,12 +13,14 @@
 
 #include "RrfVar.h"
 
-RrfVar::RrfVar() {
+RrfVarE::RrfVarE(string _str) {
+    var = _str;
 }
 
-RrfVar::RrfVar(const RrfVar& orig) {
+string RrfVarE::to_string() {
+    return var;
 }
 
-RrfVar::~RrfVar() {
-}
-
+float RrfVarE::getValue(RrfEvent* event) {
+    return event->get_mom_from_arg(var, 2, var.length()).get(0);
+};
