@@ -16,21 +16,19 @@
 RrfVar *varFactory(string str) {
     if (str.substr(0, 2) == "E_" || str.substr(0, 2) == "e_") {
         return new RrfVarE(str);
-    }
-    else if (str.substr(0, 3) == "px_" || str.substr(0, 3) == "pX_" || str.substr(0, 3) == "Px_") {
+    } else if (str.substr(0, 3) == "px_" || str.substr(0, 3) == "pX_" || str.substr(0, 3) == "Px_") {
         return new RrfVarPx(str);
-    }
-    else {
-        cout << " varFactory: Unknown variable "<<str<<"!"<<endl;
+    } else {
+        cout << " varFactory: Unknown variable " << str << "!" << endl;
         ::abort();
     }
 }
 
-RrfVarE::RrfVarE(string _str) {  var = _str;}
-string RrfVarE::to_string() {  return var; }
-float RrfVarE::getValue(RrfEvent* event) { return event->get_mom_from_arg(var, 2, var.length()).get(0);};
+float RrfVarE::getValue(RrfEvent* event) {
+    return event->get_mom_from_arg(var, 2, var.length()).get(0);
+};
 
-RrfVarPx::RrfVarPx(string _str) {  var = _str;}
-string RrfVarPx::to_string() {  return var; }
-float RrfVarPx::getValue(RrfEvent* event) { return event->get_mom_from_arg(var, 3, var.length()).get(1);};
+float RrfVarPx::getValue(RrfEvent* event) {
+    return event->get_mom_from_arg(var, 3, var.length()).get(1);
+};
 

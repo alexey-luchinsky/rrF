@@ -20,19 +20,20 @@ using namespace std;
 
 class RrfVar {
 public:
-    RrfVar() {};
+    RrfVar(string str)  { var = str;};
     RrfVar(const RrfVar& orig) {};
     virtual ~RrfVar() {};
     virtual float getValue(RrfEvent *event) = 0;
-    virtual string to_string() = 0;
+    string to_string() { return var;};
+private:
+    string var;
 };
 
 RrfVar *varFactory(string str);
 
 class RrfVarE: public RrfVar {
 public:
-    RrfVarE(string _str);
-    string to_string();
+    RrfVarE(string str): RrfVar(str)  { var = str;};
     float getValue(RrfEvent *event);
 private:
     string var;
@@ -40,8 +41,7 @@ private:
 
 class RrfVarPx: public RrfVar {
 public:
-    RrfVarPx(string _str);
-    string to_string();
+    RrfVarPx(string str): RrfVar(str)  { var = str;};
     float getValue(RrfEvent *event);
 private:
     string var;
