@@ -38,5 +38,15 @@ private:
     string var;
 };
 
+class RrfVarPx: public RrfVar {
+public:
+    RrfVarPx(string _str);
+    string to_string();
+    float getValue(RrfEvent *event);
+private:
+    string var;
+};
+
+
 #endif /* RRFVAR_H */
 
