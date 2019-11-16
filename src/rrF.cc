@@ -243,12 +243,6 @@ float calc_var(RrfEvent *event, string var) {
     } else if (var.substr(0, 3) == "pT_" || var.substr(0, 3) == "pt_") {
         P = event->get_mom_from_arg(var, 3, var.length());
         return sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2));
-    } else if (var.substr(0, 3) == "py_" || var.substr(0, 3) == "pY_") {
-        P = event->get_mom_from_arg(var, 3, var.length());
-        return P.get(2);
-    } else if (var.substr(0, 3) == "pz_" || var.substr(0, 3) == "pZ_") {
-        P = event->get_mom_from_arg(var, 3, var.length());
-        return P.get(3);
     } else if (var.substr(0, 3) == "m2_") {
         P = event->get_mom_from_arg(var, 3, var.length());
         return P.mass2();

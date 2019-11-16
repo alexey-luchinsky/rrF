@@ -47,6 +47,22 @@ private:
     string var;
 };
 
+class RrfVarPy: public RrfVar {
+public:
+    RrfVarPy(string str): RrfVar(str)  { var = str;};
+    float getValue(RrfEvent *event);
+private:
+    string var;
+};
+
+class RrfVarPz: public RrfVar {
+public:
+    RrfVarPz(string str): RrfVar(str)  { var = str;};
+    float getValue(RrfEvent *event);
+private:
+    string var;
+};
+
 
 #endif /* RRFVAR_H */
 

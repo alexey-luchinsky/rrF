@@ -18,6 +18,10 @@ RrfVar *varFactory(string str) {
         return new RrfVarE(str);
     } else if (str.substr(0, 3) == "px_" || str.substr(0, 3) == "pX_" || str.substr(0, 3) == "Px_") {
         return new RrfVarPx(str);
+    } else if (str.substr(0, 3) == "py_" || str.substr(0, 3) == "pY_" || str.substr(0, 3) == "Py_") {
+        return new RrfVarPy(str);
+    } else if (str.substr(0, 3) == "pz_" || str.substr(0, 3) == "pZ_" || str.substr(0, 3) == "Pz_") {
+        return new RrfVarPz(str);
     } else {
         cout << " varFactory: Unknown variable " << str << "!" << endl;
         ::abort();
@@ -32,3 +36,10 @@ float RrfVarPx::getValue(RrfEvent* event) {
     return event->get_mom_from_arg(var, 3, var.length()).get(1);
 };
 
+float RrfVarPy::getValue(RrfEvent* event) {
+    return event->get_mom_from_arg(var, 3, var.length()).get(2);
+}
+
+float RrfVarPz::getValue(RrfEvent* event) {
+    return event->get_mom_from_arg(var, 3, var.length()).get(3);
+}
