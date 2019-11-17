@@ -65,10 +65,13 @@ class RrfVarM2: public RrfVar {
 public:
     RrfVarM2(string str): RrfVar(str)  { var = str;};
     float getValue(RrfEvent *event);
-private:
-    string var;
 };
 
+class RrfVarM: public RrfVar {
+public:
+    RrfVarM(string str): RrfVar(str)  { var = str;};
+    float getValue(RrfEvent *event);
+};
 
 #endif /* RRFVAR_H */
 

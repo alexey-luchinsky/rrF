@@ -26,6 +26,8 @@ RrfVar *varFactory(string str) {
         return new RrfVarPT(str);
     } else if (str.substr(0, 3) == "m2_" || str.substr(0, 3) == "M2_") {
         return new RrfVarM2(str);
+    } else if (str.substr(0, 2) == "m_" || str.substr(0, 2) == "M_") {
+        return new RrfVarM(str);
     } else {
         cout << " varFactory: Unknown variable " << str << "!" << endl;
         ::abort();
@@ -56,4 +58,10 @@ float RrfVarPT::getValue(RrfEvent* event) {
 float RrfVarM2::getValue(RrfEvent* event) {
     EvtVector4R P = event->get_mom_from_arg(var, 3, var.length());
     return P.mass2();
+}
+
+float RrfVarM::getValue(RrfEvent* event) {
+    EvtVector4R P = event->get_mom_from_arg(var, 2, var.length());
+    return P.mass();
+
 }
