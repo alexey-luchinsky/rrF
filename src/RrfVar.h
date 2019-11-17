@@ -25,7 +25,7 @@ public:
     virtual ~RrfVar() {};
     virtual float getValue(RrfEvent *event) = 0;
     string to_string() { return var;};
-private:
+protected:
     string var;
 };
 
@@ -35,29 +35,35 @@ class RrfVarE: public RrfVar {
 public:
     RrfVarE(string str): RrfVar(str)  { var = str;};
     float getValue(RrfEvent *event);
-private:
-    string var;
 };
 
 class RrfVarPx: public RrfVar {
 public:
     RrfVarPx(string str): RrfVar(str)  { var = str;};
     float getValue(RrfEvent *event);
-private:
-    string var;
 };
 
 class RrfVarPy: public RrfVar {
 public:
     RrfVarPy(string str): RrfVar(str)  { var = str;};
     float getValue(RrfEvent *event);
-private:
-    string var;
 };
 
 class RrfVarPz: public RrfVar {
 public:
     RrfVarPz(string str): RrfVar(str)  { var = str;};
+    float getValue(RrfEvent *event);
+};
+
+class RrfVarPT: public RrfVar {
+public:
+    RrfVarPT(string str): RrfVar(str)  { var = str;};
+    float getValue(RrfEvent *event);
+};
+
+class RrfVarM2: public RrfVar {
+public:
+    RrfVarM2(string str): RrfVar(str)  { var = str;};
     float getValue(RrfEvent *event);
 private:
     string var;

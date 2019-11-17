@@ -240,12 +240,6 @@ float calc_var(RrfEvent *event, string var) {
         EvtVector4R p1 = event->get_mom_from_arg(var, 4, 5);
         EvtVector4R p2 = event->get_mom_from_arg(var, 6, 7);
         return cos_between(p1, p2);
-    } else if (var.substr(0, 3) == "pT_" || var.substr(0, 3) == "pt_") {
-        P = event->get_mom_from_arg(var, 3, var.length());
-        return sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2));
-    } else if (var.substr(0, 3) == "m2_") {
-        P = event->get_mom_from_arg(var, 3, var.length());
-        return P.mass2();
     } else if (var.substr(0, 2) == "m_") {
         P = event->get_mom_from_arg(var, 2, var.length());
         return P.mass();
