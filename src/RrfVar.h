@@ -59,6 +59,8 @@ class RrfVarPT: public RrfVar {
 public:
     RrfVarPT(string str): RrfVar(str)  { var = str;};
     float getValue(RrfEvent *event);
+protected:
+    EvtVector4R P;
 };
 
 class RrfVarM2: public RrfVar {
@@ -72,6 +74,13 @@ public:
     RrfVarM(string str): RrfVar(str)  { var = str;};
     float getValue(RrfEvent *event);
 };
+
+class RrfVarId: public RrfVar {
+public:
+    RrfVarId(string str): RrfVar(str)  { var = str;};
+    float getValue(RrfEvent *event);
+};
+
 
 #endif /* RRFVAR_H */
 

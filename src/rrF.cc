@@ -243,9 +243,6 @@ float calc_var(RrfEvent *event, string var) {
     } else if (var.substr(0, 2) == "m_") {
         P = event->get_mom_from_arg(var, 2, var.length());
         return P.mass();
-    } else if (var.substr(0, 3) == "id_") {
-        int ind = event->char_to_ind(var[3]);
-        return event->pdgID[ind];
     } else if (var == "prob") {
         return event->fProb;
     } else {

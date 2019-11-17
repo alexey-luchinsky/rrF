@@ -28,6 +28,8 @@ RrfVar *varFactory(string str) {
         return new RrfVarM2(str);
     } else if (str.substr(0, 2) == "m_" || str.substr(0, 2) == "M_") {
         return new RrfVarM(str);
+    } else if (str.substr(0, 3) == "id_" || str.substr(0, 3) == "Id_" || str.substr(0, 3) == "ID_") {
+        return new RrfVarId(str);
     } else {
         cout << " varFactory: Unknown variable " << str << "!" << endl;
         ::abort();
@@ -51,17 +53,19 @@ float RrfVarPz::getValue(RrfEvent* event) {
 }
 
 float RrfVarPT::getValue(RrfEvent* event) {
-    EvtVector4R P = event->get_mom_from_arg(var, 3, var.length());
+    P = event->get_mom_from_arg(var, 3, var.length());
     return sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2));
 }
 
 float RrfVarM2::getValue(RrfEvent* event) {
-    EvtVector4R P = event->get_mom_from_arg(var, 3, var.length());
-    return P.mass2();
+    return event->get_mom_from_arg(var, 3, var.length()).mass2();
 }
 
 float RrfVarM::getValue(RrfEvent* event) {
-    EvtVector4R P = event->get_mom_from_arg(var, 2, var.length());
-    return P.mass();
+    return event->get_mom_from_arg(var, 2, var.length()).mass();
+}
 
+float RrfVarId::getValue(RrfEvent* event) {
+        int ind = event->char_to_ind(var[3]);
+        return event->pdgID[ind];
 }
