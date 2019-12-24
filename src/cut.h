@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include "RrfEvent.h"
+#include "RrfVar.h"
 
 using namespace std;
 
@@ -36,7 +37,7 @@ public:
     virtual ~cut();
 
     string get_var() {
-        return var;
+        return var->to_string();
     }
 
     /**
@@ -45,7 +46,7 @@ public:
      */
     bool is_ok(RrfEvent *event);
 private:
-    std::string var;
+    RrfVar *var;
     string operation;
     double value;
     double error;

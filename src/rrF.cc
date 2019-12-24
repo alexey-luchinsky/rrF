@@ -212,16 +212,6 @@ void print_vec(std::string title, EvtVector4R k) {
     cout << title << "=" << k << "; m = " << k.mass() << ";\n";
 }
 
-float calc_var(RrfEvent *event, string var) {
-    EvtVector4R P;
-    if (var.substr(0, 2) == "m_") {
-        P = event->get_mom_from_arg(var, 2, var.length());
-        return P.mass();
-    } else {
-        cout << "Unknown variable \" \"" << var << endl;
-        ::abort();
-    }
-}
 
 bool read_event(RrfEvent *event, TNtuple *tup, int iEv) {
     for (cut* c : cuts) {
