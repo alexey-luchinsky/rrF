@@ -22,6 +22,9 @@
 using namespace TCLAP;
 using namespace std;
 
+// descriptor
+string descriptor;
+
 // histogram parameters
 vector<RrfVar *> vars;
 vector<float> min_list, max_list;
@@ -144,6 +147,8 @@ void read_args(int argc, char **argv) {
         cmd.add(save_hst_arg);
         ValueArg<int> nBins_arg("b", "bins", "Number of bins in the histogrm", false, 50, "int", cmd);
         MultiArg<string> cuts_arg("c", "cut", "cuts", false, "", cmd);
+        ValueArg<string> descriptor_arg("d", "descriptor", "decay descriptor", false, "", "string", cmd);
+        
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
@@ -153,6 +158,7 @@ void read_args(int argc, char **argv) {
         nBins = nBins_arg.getValue();
         nev = (int) nev_arg.getValue();
         evt_pdl_path = evt_pdl_path_arg.getValue();
+        descriptor = descriptor_arg.getValue();
 
         // reading the vars list
         read_hst_args(vars_arg.getValue());
@@ -205,6 +211,7 @@ void read_args(int argc, char **argv) {
     for (cut *c : cuts) {
         cout << "|" << c->get_var() << "|" << endl;
     }
+    cout << "\t descriptor = "<<descriptor<<endl;
 }
 
 
