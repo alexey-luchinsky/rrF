@@ -23,7 +23,8 @@ using namespace TCLAP;
 using namespace std;
 
 // descriptor
-string descriptor;
+string descriptor_string;
+std::vector<int> desciptor_vec;
 
 // histogram parameters
 vector<RrfVar *> vars;
@@ -148,7 +149,7 @@ void read_args(int argc, char **argv) {
         ValueArg<int> nBins_arg("b", "bins", "Number of bins in the histogrm", false, 50, "int", cmd);
         MultiArg<string> cuts_arg("c", "cut", "cuts", false, "", cmd);
         ValueArg<string> descriptor_arg("d", "descriptor", "decay descriptor", false, "", "string", cmd);
-        
+
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
@@ -158,7 +159,9 @@ void read_args(int argc, char **argv) {
         nBins = nBins_arg.getValue();
         nev = (int) nev_arg.getValue();
         evt_pdl_path = evt_pdl_path_arg.getValue();
-        descriptor = descriptor_arg.getValue();
+
+        // analyzing the descriptor       
+        descriptor_string = descriptor_arg.getValue();
 
         // reading the vars list
         read_hst_args(vars_arg.getValue());
@@ -211,14 +214,12 @@ void read_args(int argc, char **argv) {
     for (cut *c : cuts) {
         cout << "|" << c->get_var() << "|" << endl;
     }
-    cout << "\t descriptor = "<<descriptor<<endl;
+    cout << "\t descriptor = " << descriptor_string << endl;
 }
-
 
 void print_vec(std::string title, EvtVector4R k) {
     cout << title << "=" << k << "; m = " << k.mass() << ";\n";
 }
-
 
 bool read_event(RrfEvent *event, TNtuple *tup, int iEv) {
     for (cut* c : cuts) {
@@ -258,6 +259,20 @@ int main(int argc, char **argv) {
     };
     fields.pop_back();
     TNtuple *tup = new TNtuple("tup", "tup", fields.c_str());
+
+    vector<string> ss = split_string(descriptor_string, " ");
+    for (string d : ss) {
+        if (d[0] == '^') {
+            desciptor_vec.push_back(EvtPDL::getId(d.substr(1)).getId());
+        }
+    }
+    cout << " desciptor_vec = {";
+    for (int i : desciptor_vec) {
+        cout << " " << i;
+    }
+    cout << "}" << endl;
+
+
 
     int passed = 0;
     for (int iEv = 0; iEv < nEv; ++iEv) {
