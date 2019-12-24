@@ -66,6 +66,11 @@ int RrfEvent::char_to_ind(char c) {
     return ind;
 }
 
+EvtVector4R RrfEvent::get_mom_from_i(int i) {
+    return EvtVector4R(fE[i], fPx[i], fPy[i], fPz[i]);
+    
+}
+
 EvtVector4R RrfEvent::get_mom_from_arg(string var, int start_pos, int end_pos) {
     EvtVector4R P, _p;
     for (int i = start_pos; i < end_pos; ++i) {
@@ -73,10 +78,9 @@ EvtVector4R RrfEvent::get_mom_from_arg(string var, int start_pos, int end_pos) {
         if (var[i] == 'm' && i < var.length()) {
             fact = -1;
             ++i;
-        }
+        };
         int ind = char_to_ind(var[i]);
-        _p.set(fE[ind], fPx[ind], fPy[ind], fPz[ind]);
-        P += fact*_p;
+        P += fact*get_mom_from_i(ind);
     };
     return P;
 }

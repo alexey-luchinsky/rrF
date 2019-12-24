@@ -29,6 +29,7 @@ public:
     virtual ~RrfEvent();
     void init_input_fields(TTree *ntp);
     int char_to_ind(char c);
+    EvtVector4R get_mom_from_i(int i);
     EvtVector4R get_mom_from_arg(std::string var, int start_pos, int end_pos);
 
     Int_t ev = 0;
