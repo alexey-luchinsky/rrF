@@ -13,7 +13,6 @@
 
 #include "RrfVar.h"
 
-
 double RrfVar::cos_between(EvtVector4R p1, EvtVector4R p2) {
     double mag1 = 0, mag2 = 0, p1p2 = 0;
     for (int i = 1; i <= 3; ++i) {
@@ -45,6 +44,8 @@ RrfVar *varFactory(string str) {
         return new RrfVarCos(str);
     } else if (str.substr(0, 5) == "cos0_") {
         return new RrfVarCos0(str);
+    } else if (str.substr(0, 4) == "cth_") {
+        return new RrfVarCth(str);
     } else {
         cout << " varFactory: Unknown variable " << str << "!" << endl;
         ::abort();
@@ -81,21 +82,26 @@ float RrfVarM::getValue(RrfEvent* event) {
 }
 
 float RrfVarId::getValue(RrfEvent* event) {
-        int ind = event->char_to_ind(var[3]);
-        return event->pdgID[ind];
+    int ind = event->char_to_ind(var[3]);
+    return event->pdgID[ind];
 }
 
 float RrfVarCos::getValue(RrfEvent* event) {
-        EvtVector4R p1 = event->get_mom_from_arg(var, 4, 5);
-        EvtVector4R p2 = event->get_mom_from_arg(var, 6, 7);
-        return cos_between(p1, p2);    
+    EvtVector4R p1 = event->get_mom_from_arg(var, 4, 5);
+    EvtVector4R p2 = event->get_mom_from_arg(var, 6, 7);
+    return cos_between(p1, p2);
 }
 
 float RrfVarCos0::getValue(RrfEvent* event) {
-        size_t pos2 = var.find("_", 6);
-        EvtVector4R k1 = event->get_mom_from_arg(var, 5, pos2);
-        EvtVector4R k2 = event->get_mom_from_arg(var, pos2 + 1, var.length());
-        EvtVector4R k10 = k1;
-        k10.applyBoostTo(k2, true);
-        return cos_between(k2, k10);
+    size_t pos2 = var.find("_", 6);
+    EvtVector4R k1 = event->get_mom_from_arg(var, 5, pos2);
+    EvtVector4R k2 = event->get_mom_from_arg(var, pos2 + 1, var.length());
+    EvtVector4R k10 = k1;
+    k10.applyBoostTo(k2, true);
+    return cos_between(k2, k10);
+}
+
+float RrfVarCth::getValue(RrfEvent* event) {
+    EvtVector4R P = event->get_mom_from_arg(var, 4, var.length());
+    return P.get(3) / sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2) + P.get(3) * P.get(3));
 }

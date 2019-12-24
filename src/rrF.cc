@@ -214,10 +214,7 @@ void print_vec(std::string title, EvtVector4R k) {
 
 float calc_var(RrfEvent *event, string var) {
     EvtVector4R P;
-    if (var.substr(0, 4) == "cth_") {
-        P = event->get_mom_from_arg(var, 4, var.length());
-        return P.get(3) / sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2) + P.get(3) * P.get(3));
-    } else if (var.substr(0, 2) == "m_") {
+    if (var.substr(0, 2) == "m_") {
         P = event->get_mom_from_arg(var, 2, var.length());
         return P.mass();
     } else if (var == "prob") {

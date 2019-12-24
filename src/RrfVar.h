@@ -95,5 +95,13 @@ public:
     float getValue(RrfEvent *event);
 };
 
+class RrfVarCth: public RrfVar {
+public:
+    RrfVarCth(string str): RrfVar(str)  { var = str;};
+    float getValue(RrfEvent *event);
+};
+
+
+
 #endif /* RRFVAR_H */
 
