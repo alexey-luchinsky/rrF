@@ -37,7 +37,7 @@ cut::cut(std::string s) {
         cout<<" WRONG FORMAT of the cut " << s << "!" << endl;
         return;
     };
-    var = args[0];
+    var = varFactory(args[0]);
     operation = args[1];
     value = atof(args[2].c_str());
     if(operation == "=" && args[3]=="+-") {
@@ -49,10 +49,11 @@ cut::cut(const cut& orig) {
 }
 
 cut::~cut() {
+    delete var;
 }
 
 bool cut::is_ok(RrfEvent *event) {
-    float v = calc_var(event, var);
+    float v = var->getValue(event);
     if(operation == ">") {
         return v > value;
     }

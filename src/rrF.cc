@@ -16,13 +16,14 @@
 #include "EvtGenBase/EvtVector4R.hh"
 #include "cut.h"
 #include "RrfEvent.h"
+#include "RrfVar.h"
 
 
 using namespace TCLAP;
 using namespace std;
 
 // histogram parameters
-vector<string> vars;
+vector<RrfVar *> vars;
 vector<float> min_list, max_list;
 vector<int> nbins_list;
 string evt_pdl_path;
@@ -83,7 +84,7 @@ void add_var(string var) {
     // read var name
     if (vv.size() < 1) {
         cout << "WR0NG variable " << var << "!" << endl;
-    } else vars.push_back(vv[0]);
+    } else vars.push_back(varFactory(vv[0]));
     // read nbins
     if (vv.size() < 2) {
         nbins_list.push_back(-1);
@@ -206,70 +207,11 @@ void read_args(int argc, char **argv) {
     }
 }
 
-double cos_between(EvtVector4R p1, EvtVector4R p2) {
-    double mag1 = 0, mag2 = 0, p1p2 = 0;
-    for (int i = 1; i <= 3; ++i) {
-        mag1 += p1.get(i) * p1.get(i);
-        mag2 += p2.get(i) * p2.get(i);
-        p1p2 += p1.get(i) * p2.get(i);
-    }
-    return p1p2 / sqrt(mag1) / sqrt(mag2);
-}
 
 void print_vec(std::string title, EvtVector4R k) {
     cout << title << "=" << k << "; m = " << k.mass() << ";\n";
 }
 
-float calc_var(RrfEvent *event, string var) {
-    EvtVector4R P;
-    if (var.substr(0, 4) == "cth_") {
-        P = event->get_mom_from_arg(var, 4, var.length());
-        return P.get(3) / sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2) + P.get(3) * P.get(3));
-    } else if (var.substr(0, 5) == "cos0_") {
-        //        cout << "calc_var: var = " << var << endl;
-        size_t pos2 = var.find("_", 6);
-        EvtVector4R k1 = event->get_mom_from_arg(var, 5, pos2);
-        //        print_vec("mom1", k1);
-        EvtVector4R k2 = event->get_mom_from_arg(var, pos2 + 1, var.length());
-        //        print_vec("mom2", k2);
-        EvtVector4R k10 = k1;
-        k10.applyBoostTo(k2, true);
-        return cos_between(k2, k10);
-    } else if (var.substr(0, 4) == "cos_" && var.length() == 7) {
-        EvtVector4R p1 = event->get_mom_from_arg(var, 4, 5);
-        EvtVector4R p2 = event->get_mom_from_arg(var, 6, 7);
-        return cos_between(p1, p2);
-    } else if (var.substr(0, 3) == "pT_" || var.substr(0, 3) == "pt_") {
-        P = event->get_mom_from_arg(var, 3, var.length());
-        return sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2));
-    } else if (var.substr(0, 3) == "px_" || var.substr(0, 3) == "pX_") {
-        P = event->get_mom_from_arg(var, 3, var.length());
-        return P.get(1);
-    } else if (var.substr(0, 3) == "py_" || var.substr(0, 3) == "pY_") {
-        P = event->get_mom_from_arg(var, 3, var.length());
-        return P.get(2);
-    } else if (var.substr(0, 3) == "pz_" || var.substr(0, 3) == "pZ_") {
-        P = event->get_mom_from_arg(var, 3, var.length());
-        return P.get(3);
-    } else if (var.substr(0, 2) == "E_" || var.substr(0, 2) == "e_") {
-        P = event->get_mom_from_arg(var, 2, var.length());
-        return P.get(0);
-    } else if (var.substr(0, 3) == "m2_") {
-        P = event->get_mom_from_arg(var, 3, var.length());
-        return P.mass2();
-    } else if (var.substr(0, 2) == "m_") {
-        P = event->get_mom_from_arg(var, 2, var.length());
-        return P.mass();
-    } else if (var.substr(0, 3) == "id_") {
-        int ind = event->char_to_ind(var[3]);
-        return event->pdgID[ind];
-    } else if (var == "prob") {
-        return event->fProb;
-    } else {
-        cout << "Unknown variable \" \"" << var << endl;
-        ::abort();
-    }
-}
 
 bool read_event(RrfEvent *event, TNtuple *tup, int iEv) {
     for (cut* c : cuts) {
@@ -279,7 +221,7 @@ bool read_event(RrfEvent *event, TNtuple *tup, int iEv) {
     };
     vector<float> values;
     for (int i = 0; i < vars.size(); ++i) {
-        float x = calc_var(event, vars[i]);
+        float x = vars[i]->getValue(event);
         values.push_back(x);
     };
     tup->Fill(values.data());
@@ -305,7 +247,7 @@ int main(int argc, char **argv) {
 
     string fields = "";
     for (int i = 0; i < vars.size(); ++i) {
-        fields += vars[i] + ":";
+        fields += vars[i]->to_string() + ":";
     };
     fields.pop_back();
     TNtuple *tup = new TNtuple("tup", "tup", fields.c_str());
@@ -327,7 +269,7 @@ int main(int argc, char **argv) {
 
     if (save_hst) {
         for (int i = 0; i < vars.size(); ++i) {
-            saveHST(tup, vars[i], vars[i] + ".txt", min_list[i], max_list[i], nbins_list[i]);
+            saveHST(tup, vars[i]->to_string(), vars[i]->to_string() + ".txt", min_list[i], max_list[i], nbins_list[i]);
         };
     };
 
