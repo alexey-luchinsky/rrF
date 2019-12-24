@@ -43,6 +43,8 @@ RrfVar *varFactory(string str) {
         return new RrfVarId(str);
     } else if (str.substr(0, 4) == "cos_" && str.length() == 7) {
         return new RrfVarCos(str);
+    } else if (str.substr(0, 5) == "cos0_") {
+        return new RrfVarCos0(str);
     } else {
         cout << " varFactory: Unknown variable " << str << "!" << endl;
         ::abort();
@@ -87,4 +89,13 @@ float RrfVarCos::getValue(RrfEvent* event) {
         EvtVector4R p1 = event->get_mom_from_arg(var, 4, 5);
         EvtVector4R p2 = event->get_mom_from_arg(var, 6, 7);
         return cos_between(p1, p2);    
+}
+
+float RrfVarCos0::getValue(RrfEvent* event) {
+        size_t pos2 = var.find("_", 6);
+        EvtVector4R k1 = event->get_mom_from_arg(var, 5, pos2);
+        EvtVector4R k2 = event->get_mom_from_arg(var, pos2 + 1, var.length());
+        EvtVector4R k10 = k1;
+        k10.applyBoostTo(k2, true);
+        return cos_between(k2, k10);
 }

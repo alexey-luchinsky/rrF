@@ -207,15 +207,6 @@ void read_args(int argc, char **argv) {
     }
 }
 
-double cos_between(EvtVector4R p1, EvtVector4R p2) {
-    double mag1 = 0, mag2 = 0, p1p2 = 0;
-    for (int i = 1; i <= 3; ++i) {
-        mag1 += p1.get(i) * p1.get(i);
-        mag2 += p2.get(i) * p2.get(i);
-        p1p2 += p1.get(i) * p2.get(i);
-    }
-    return p1p2 / sqrt(mag1) / sqrt(mag2);
-}
 
 void print_vec(std::string title, EvtVector4R k) {
     cout << title << "=" << k << "; m = " << k.mass() << ";\n";
@@ -226,20 +217,6 @@ float calc_var(RrfEvent *event, string var) {
     if (var.substr(0, 4) == "cth_") {
         P = event->get_mom_from_arg(var, 4, var.length());
         return P.get(3) / sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2) + P.get(3) * P.get(3));
-    } else if (var.substr(0, 5) == "cos0_") {
-        //        cout << "calc_var: var = " << var << endl;
-        size_t pos2 = var.find("_", 6);
-        EvtVector4R k1 = event->get_mom_from_arg(var, 5, pos2);
-        //        print_vec("mom1", k1);
-        EvtVector4R k2 = event->get_mom_from_arg(var, pos2 + 1, var.length());
-        //        print_vec("mom2", k2);
-        EvtVector4R k10 = k1;
-        k10.applyBoostTo(k2, true);
-        return cos_between(k2, k10);
-    } else if (var.substr(0, 4) == "cos_" && var.length() == 7) {
-        EvtVector4R p1 = event->get_mom_from_arg(var, 4, 5);
-        EvtVector4R p2 = event->get_mom_from_arg(var, 6, 7);
-        return cos_between(p1, p2);
     } else if (var.substr(0, 2) == "m_") {
         P = event->get_mom_from_arg(var, 2, var.length());
         return P.mass();
