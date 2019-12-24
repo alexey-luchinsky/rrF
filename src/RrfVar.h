@@ -27,6 +27,7 @@ public:
     string to_string() { return var;};
 protected:
     string var;
+    double cos_between(EvtVector4R p1, EvtVector4R p2);
 };
 
 RrfVar *varFactory(string str);
@@ -78,6 +79,13 @@ public:
 class RrfVarId: public RrfVar {
 public:
     RrfVarId(string str): RrfVar(str)  { var = str;};
+    float getValue(RrfEvent *event);
+};
+
+
+class RrfVarCos: public RrfVar {
+public:
+    RrfVarCos(string str): RrfVar(str)  { var = str;};
     float getValue(RrfEvent *event);
 };
 

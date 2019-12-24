@@ -13,6 +13,17 @@
 
 #include "RrfVar.h"
 
+
+double RrfVar::cos_between(EvtVector4R p1, EvtVector4R p2) {
+    double mag1 = 0, mag2 = 0, p1p2 = 0;
+    for (int i = 1; i <= 3; ++i) {
+        mag1 += p1.get(i) * p1.get(i);
+        mag2 += p2.get(i) * p2.get(i);
+        p1p2 += p1.get(i) * p2.get(i);
+    }
+    return p1p2 / sqrt(mag1) / sqrt(mag2);
+}
+
 RrfVar *varFactory(string str) {
     if (str.substr(0, 2) == "E_" || str.substr(0, 2) == "e_") {
         return new RrfVarE(str);
@@ -30,6 +41,8 @@ RrfVar *varFactory(string str) {
         return new RrfVarM(str);
     } else if (str.substr(0, 3) == "id_" || str.substr(0, 3) == "Id_" || str.substr(0, 3) == "ID_") {
         return new RrfVarId(str);
+    } else if (str.substr(0, 4) == "cos_" && str.length() == 7) {
+        return new RrfVarCos(str);
     } else {
         cout << " varFactory: Unknown variable " << str << "!" << endl;
         ::abort();
@@ -68,4 +81,10 @@ float RrfVarM::getValue(RrfEvent* event) {
 float RrfVarId::getValue(RrfEvent* event) {
         int ind = event->char_to_ind(var[3]);
         return event->pdgID[ind];
+}
+
+float RrfVarCos::getValue(RrfEvent* event) {
+        EvtVector4R p1 = event->get_mom_from_arg(var, 4, 5);
+        EvtVector4R p2 = event->get_mom_from_arg(var, 6, 7);
+        return cos_between(p1, p2);    
 }
