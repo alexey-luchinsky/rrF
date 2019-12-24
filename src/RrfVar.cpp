@@ -46,7 +46,9 @@ RrfVar *varFactory(string str) {
         return new RrfVarCos0(str);
     } else if (str.substr(0, 4) == "cth_") {
         return new RrfVarCth(str);
-    } else {
+     } else if (str == "prob") {
+         return new RrfVarProb(str);
+   } else {
         cout << " varFactory: Unknown variable " << str << "!" << endl;
         ::abort();
     }
@@ -104,4 +106,8 @@ float RrfVarCos0::getValue(RrfEvent* event) {
 float RrfVarCth::getValue(RrfEvent* event) {
     EvtVector4R P = event->get_mom_from_arg(var, 4, var.length());
     return P.get(3) / sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2) + P.get(3) * P.get(3));
+}
+
+float RrfVarProb::getValue(RrfEvent* event) {
+        return event->fProb;
 }

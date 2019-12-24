@@ -217,8 +217,6 @@ float calc_var(RrfEvent *event, string var) {
     if (var.substr(0, 2) == "m_") {
         P = event->get_mom_from_arg(var, 2, var.length());
         return P.mass();
-    } else if (var == "prob") {
-        return event->fProb;
     } else {
         cout << "Unknown variable \" \"" << var << endl;
         ::abort();
