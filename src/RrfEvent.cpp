@@ -68,9 +68,17 @@ int RrfEvent::char_to_ind(char c) {
 EvtVector4R RrfEvent::get_mom_from_i(int i, std::vector<int> *desc) {
     EvtVector4R p;
     if (desc->size() == 0) {
+        if(i>=nTrk) {
+            cout << " Particle number " << i << " is larger then the number of tracks "<< nTrk << endl;
+            return p;
+        };
         p.set(fE[i], fPx[i], fPy[i], fPz[i]);
         return p;
     } else {
+        if(i>=desc->size()) {
+            cout << " Particle number " << i << " is larger then the size of the descriptor " << desc->size() << endl;
+            return p;
+        }
         int id = (*desc)[i];
         for (int _i = 0; _i < nTrk; ++_i) {
             if (pdgID[_i] == id) {
