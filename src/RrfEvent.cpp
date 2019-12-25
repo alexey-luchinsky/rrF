@@ -69,16 +69,18 @@ EvtVector4R RrfEvent::get_mom_from_i(int i, std::vector<int> *desc) {
     EvtVector4R p;
     if (desc->size() == 0) {
         p.set(fE[i], fPx[i], fPy[i], fPz[i]);
+        return p;
     } else {
         int id = (*desc)[i];
         for (int _i = 0; _i < nTrk; ++_i) {
             if (pdgID[_i] == id) {
                 p.set(fE[_i], fPx[_i], fPy[_i], fPz[_i]);
+                return p;
             };
         };
+        cout << "The particle with id = " << id << " was not found!" << endl;
+        return p;
     };
-    return p;
-
 }
 
 EvtVector4R RrfEvent::get_mom_from_arg(string var, int start_pos, int end_pos, std::vector<int> *desc) {
