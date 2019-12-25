@@ -60,21 +60,28 @@ int RrfEvent::char_to_ind(char c) {
     int ind = c - '0';
     if (ind < 0 || ind >= nTrk) {
         cout << "wrong particle number " << ind << " with nTrk = " << nTrk << endl;
-        
         ::abort();
     };
     return ind;
 }
 
-EvtVector4R RrfEvent::get_mom_from_i(int i) {
-    return EvtVector4R(fE[i], fPx[i], fPy[i], fPz[i]);   
+EvtVector4R RrfEvent::get_mom_from_i(int i, std::vector<int> *desc) {
+    EvtVector4R p;
+    if (desc->size() == 0) {
+        p.set(fE[i], fPx[i], fPy[i], fPz[i]);
+    } else {
+        int id = (*desc)[i];
+        for (int _i = 0; _i < nTrk; ++_i) {
+            if (pdgID[_i] == id) {
+                p.set(fE[_i], fPx[_i], fPy[_i], fPz[_i]);
+            };
+        };
+    };
+    return p;
+
 }
 
-EvtVector4R RrfEvent::get_mom_from_i(int i, std::vector<int> desc) {
-    return EvtVector4R(fE[i], fPx[i], fPy[i], fPz[i]);    
-}
-
-EvtVector4R RrfEvent::get_mom_from_arg(string var, int start_pos, int end_pos) {
+EvtVector4R RrfEvent::get_mom_from_arg(string var, int start_pos, int end_pos, std::vector<int> *desc) {
     EvtVector4R P, _p;
     for (int i = start_pos; i < end_pos; ++i) {
         float fact = 1;
@@ -83,7 +90,7 @@ EvtVector4R RrfEvent::get_mom_from_arg(string var, int start_pos, int end_pos) {
             ++i;
         };
         int ind = char_to_ind(var[i]);
-        P += fact*get_mom_from_i(ind);
+        P += fact * get_mom_from_i(ind, desc);
     };
     return P;
 }

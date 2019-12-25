@@ -94,7 +94,7 @@ void add_var(string var) {
     // read var name
     if (vv.size() < 1) {
         cout << "WR0NG variable " << var << "!" << endl;
-    } else vars.push_back(varFactory(vv[0]));
+    } else vars.push_back(varFactory(vv[0], &desciptor_vec));
     // read nbins
     if (vv.size() < 2) {
         nbins_list.push_back(-1);
@@ -178,10 +178,10 @@ void read_args(int argc, char **argv) {
             ReplaceStringInPlace(s, "&", ",");
             if (s.find(',') != string::npos) {
                 for (string v : split_string(s, ",")) {
-                    cuts.push_back(new cut(v));
+                    cuts.push_back(new cut(v, desciptor_vec));
                 }
             } else {
-                cuts.push_back(new cut(s));
+                cuts.push_back(new cut(s, desciptor_vec));
             };
         }
     } catch (ArgException &e) {

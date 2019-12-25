@@ -26,8 +26,9 @@ void ReplaceStringInPlace(std::string& subject, const std::string& search,
 
 
 
-cut::cut(std::string s) {
+cut::cut(std::string s, std::vector<int> d) {
     string _s = s;
+    descriptor_vec = d;
     ReplaceStringInPlace(_s,">"," > ");
     ReplaceStringInPlace(_s,"<"," < ");
     ReplaceStringInPlace(_s,"="," = ");
@@ -37,7 +38,7 @@ cut::cut(std::string s) {
         cout<<" WRONG FORMAT of the cut " << s << "!" << endl;
         return;
     };
-    var = varFactory(args[0]);
+    var = varFactory(args[0], &descriptor_vec);
     operation = args[1];
     value = atof(args[2].c_str());
     if(operation == "=" && args[3]=="+-") {

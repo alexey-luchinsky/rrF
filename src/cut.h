@@ -32,7 +32,7 @@ float calc_var(RrfEvent *event, string var);
  */
 class cut {
 public:
-    cut(std::string s);
+    cut(std::string s, std::vector<int> d);
     cut(const cut& orig);
     virtual ~cut();
 
@@ -50,6 +50,7 @@ private:
     string operation;
     double value;
     double error;
+    std::vector<int> descriptor_vec;
 };
 
 #endif /* CUT_H */

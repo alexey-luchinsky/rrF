@@ -29,9 +29,8 @@ public:
     virtual ~RrfEvent();
     void init_input_fields(TTree *ntp);
     int char_to_ind(char c);
-    EvtVector4R get_mom_from_i(int i);
-    EvtVector4R get_mom_from_i(int i, std::vector<int> desc);
-    EvtVector4R get_mom_from_arg(std::string var, int start_pos, int end_pos);
+    EvtVector4R get_mom_from_i(int i, std::vector<int> *desc);
+    EvtVector4R get_mom_from_arg(std::string var, int start_pos, int end_pos, std::vector<int> *desc);
 
     Int_t ev = 0;
     Int_t nLine[MAX], pdgID[MAX], nDau[MAX], nM1[MAX], nM2[MAX], nDF[MAX], nDL[MAX];

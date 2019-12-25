@@ -23,31 +23,31 @@ double RrfVar::cos_between(EvtVector4R p1, EvtVector4R p2) {
     return p1p2 / sqrt(mag1) / sqrt(mag2);
 }
 
-RrfVar *varFactory(string str) {
+RrfVar *varFactory(string str, std::vector<int> *descriptor) {
     if (str.substr(0, 2) == "E_" || str.substr(0, 2) == "e_") {
-        return new RrfVarE(str);
+        return new RrfVarE(str, descriptor);
     } else if (str.substr(0, 3) == "px_" || str.substr(0, 3) == "pX_" || str.substr(0, 3) == "Px_") {
-        return new RrfVarPx(str);
+        return new RrfVarPx(str, descriptor);
     } else if (str.substr(0, 3) == "py_" || str.substr(0, 3) == "pY_" || str.substr(0, 3) == "Py_") {
-        return new RrfVarPy(str);
+        return new RrfVarPy(str, descriptor);
     } else if (str.substr(0, 3) == "pz_" || str.substr(0, 3) == "pZ_" || str.substr(0, 3) == "Pz_") {
-        return new RrfVarPz(str);
+        return new RrfVarPz(str, descriptor);
     } else if (str.substr(0, 3) == "pt_" || str.substr(0, 3) == "pT_" || str.substr(0, 3) == "PT_") {
-        return new RrfVarPT(str);
+        return new RrfVarPT(str, descriptor);
     } else if (str.substr(0, 3) == "m2_" || str.substr(0, 3) == "M2_") {
-        return new RrfVarM2(str);
+        return new RrfVarM2(str, descriptor);
     } else if (str.substr(0, 2) == "m_" || str.substr(0, 2) == "M_") {
-        return new RrfVarM(str);
+        return new RrfVarM(str, descriptor);
     } else if (str.substr(0, 3) == "id_" || str.substr(0, 3) == "Id_" || str.substr(0, 3) == "ID_") {
-        return new RrfVarId(str);
+        return new RrfVarId(str, descriptor);
     } else if (str.substr(0, 4) == "cos_" && str.length() == 7) {
-        return new RrfVarCos(str);
+        return new RrfVarCos(str, descriptor);
     } else if (str.substr(0, 5) == "cos0_") {
-        return new RrfVarCos0(str);
+        return new RrfVarCos0(str, descriptor);
     } else if (str.substr(0, 4) == "cth_") {
-        return new RrfVarCth(str);
+        return new RrfVarCth(str, descriptor);
      } else if (str == "prob") {
-         return new RrfVarProb(str);
+         return new RrfVarProb(str, descriptor);
    } else {
         cout << " varFactory: Unknown variable " << str << "!" << endl;
         ::abort();
@@ -55,32 +55,32 @@ RrfVar *varFactory(string str) {
 }
 
 float RrfVarE::getValue(RrfEvent* event) {
-    return event->get_mom_from_arg(var, 2, var.length()).get(0);
+    return event->get_mom_from_arg(var, 2, var.length(), descriptor).get(0);
 };
 
 float RrfVarPx::getValue(RrfEvent* event) {
-    return event->get_mom_from_arg(var, 3, var.length()).get(1);
+    return event->get_mom_from_arg(var, 3, var.length(), descriptor).get(1);
 };
 
 float RrfVarPy::getValue(RrfEvent* event) {
-    return event->get_mom_from_arg(var, 3, var.length()).get(2);
+    return event->get_mom_from_arg(var, 3, var.length(), descriptor).get(2);
 }
 
 float RrfVarPz::getValue(RrfEvent* event) {
-    return event->get_mom_from_arg(var, 3, var.length()).get(3);
+    return event->get_mom_from_arg(var, 3, var.length(), descriptor).get(3);
 }
 
 float RrfVarPT::getValue(RrfEvent* event) {
-    P = event->get_mom_from_arg(var, 3, var.length());
+    P = event->get_mom_from_arg(var, 3, var.length(), descriptor);
     return sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2));
 }
 
 float RrfVarM2::getValue(RrfEvent* event) {
-    return event->get_mom_from_arg(var, 3, var.length()).mass2();
+    return event->get_mom_from_arg(var, 3, var.length(), descriptor).mass2();
 }
 
 float RrfVarM::getValue(RrfEvent* event) {
-    return event->get_mom_from_arg(var, 2, var.length()).mass();
+    return event->get_mom_from_arg(var, 2, var.length(), descriptor).mass();
 }
 
 float RrfVarId::getValue(RrfEvent* event) {
@@ -89,22 +89,22 @@ float RrfVarId::getValue(RrfEvent* event) {
 }
 
 float RrfVarCos::getValue(RrfEvent* event) {
-    EvtVector4R p1 = event->get_mom_from_arg(var, 4, 5);
-    EvtVector4R p2 = event->get_mom_from_arg(var, 6, 7);
+    EvtVector4R p1 = event->get_mom_from_arg(var, 4, 5, descriptor);
+    EvtVector4R p2 = event->get_mom_from_arg(var, 6, 7, descriptor);
     return cos_between(p1, p2);
 }
 
 float RrfVarCos0::getValue(RrfEvent* event) {
     size_t pos2 = var.find("_", 6);
-    EvtVector4R k1 = event->get_mom_from_arg(var, 5, pos2);
-    EvtVector4R k2 = event->get_mom_from_arg(var, pos2 + 1, var.length());
+    EvtVector4R k1 = event->get_mom_from_arg(var, 5, pos2, descriptor);
+    EvtVector4R k2 = event->get_mom_from_arg(var, pos2 + 1, var.length(), descriptor);
     EvtVector4R k10 = k1;
     k10.applyBoostTo(k2, true);
     return cos_between(k2, k10);
 }
 
 float RrfVarCth::getValue(RrfEvent* event) {
-    EvtVector4R P = event->get_mom_from_arg(var, 4, var.length());
+    EvtVector4R P = event->get_mom_from_arg(var, 4, var.length(), descriptor);
     return P.get(3) / sqrt(P.get(1) * P.get(1) + P.get(2) * P.get(2) + P.get(3) * P.get(3));
 }
 
