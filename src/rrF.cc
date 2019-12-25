@@ -14,6 +14,9 @@
 #include "EvtGenBase/EvtPDL.hh"
 #include "EvtGenBase/EvtId.hh"
 #include "EvtGenBase/EvtVector4R.hh"
+#include "EvtGenBase/EvtParticleFactory.hh"
+#include "EvtGenBase/EvtParticle.hh"
+
 #include "cut.h"
 #include "RrfEvent.h"
 #include "RrfVar.h"
@@ -21,6 +24,9 @@
 
 using namespace TCLAP;
 using namespace std;
+
+
+
 
 // descriptor
 string descriptor_string;
@@ -240,8 +246,12 @@ int main(int argc, char **argv) {
     cout << "rrf.exe, (c) Alexey Luchinsky" << endl;
     read_args(argc, argv);
 
+
+
     EvtPDL pdl;
     pdl.read(evt_pdl_path.c_str());
+
+
 
     TFile *in_file = new TFile(inFileName.c_str(), "READ");
     RrfEvent *event = new RrfEvent;
@@ -261,9 +271,13 @@ int main(int argc, char **argv) {
     TNtuple *tup = new TNtuple("tup", "tup", fields.c_str());
 
     vector<string> ss = split_string(descriptor_string, " ");
+    EvtId evt_id;
     for (string d : ss) {
         if (d[0] == '^') {
-            desciptor_vec.push_back(EvtPDL::getId(d.substr(1)).getId());
+            evt_id = EvtPDL::getId(d.substr(1));
+            int id = EvtPDL::getStdHep(evt_id);
+            //            int id = 0;
+            desciptor_vec.push_back(id);
         }
     }
     cout << " desciptor_vec = {";
