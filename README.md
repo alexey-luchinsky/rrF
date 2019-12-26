@@ -35,7 +35,7 @@ Variables to be saved can be specified using argument **-v**. It's general forma
   * alternatively you can use var 'cos\_i\_j', where i and j are the
     number of particles. The result will be the cosine of the momenta
     of the corresponding particles in lab frame.
-* part is the sting specifying system of particles. Every number in this string corresponds to the particle with this number in the decay file (zero stands for the decaying particle). If the letter m is preceeding the number, the corresponding momentum is taken with minus sign. For example, in the case of "tau- to e- anti-nu-e nu_tau" decay variable "m2_12m3" is (pE+pnuE-pnuTau)^2.
+* part is the srting specifying system of particles. Every number in this string corresponds to the particle with this number in the decay file (zero stands for the decaying particle, see also the descriptor below). If the letter m is preceeding the number, the corresponding momentum is taken with minus sign. For example, in the case of "tau- to e- anti-nu-e nu_tau" decay variable "m2_12m3" is (pE+pnuE-pnuTau)^2.
 * nBins, min, max are requested number of bins, minimum and maximum values of the histogram
 
 Several histograms can be saved either by giving "-v" arguments more than once, or in the list form like **-v "[m2_12, pT_3]"
@@ -53,6 +53,12 @@ and
     ./rrF.exe -v E_1 -c "E_2<0.3 & E_2>0.1"
 
 will have the same effect.
+
+If there are too many particles in the final state or you do not want to think about the order if the final particles in the decay file, you can specify the ones you are interested in using the desciptor. For example, if you run the command
+
+    ./rrF.exe -v E_0 -v m_01 -d "tau- -> nu_tau ^e- ^anti-nu_e"
+
+where 0-th and 1-st momenta will correspond to momenta of e- and anti-nu_e respectively (the names of these oarticles are marked with ^ character, the momenta are numbered in acordance with the order of these enties). Identical particles currelntly are not processed correctly.
 
 # Files and Installation
 
