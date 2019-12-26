@@ -41,7 +41,7 @@ include_directories(src/)
 
 
 #adding sources for rrF.exe
-add_executable (rrF.exe "src/rrF.cc" "src/cut.cc" "src/RrfEvent.cpp" "src/RrfVar.cpp")
+add_executable (rrF.exe "src/rrF.cc" "src/cut.cc" "src/RrfEvent.cpp" "src/RrfVar.cpp" "src/RrfDescriptor.cpp")
 target_link_libraries(rrF.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/libEvtGen.a)
 
 #adding sources for simpleEvtGenRO.exe
