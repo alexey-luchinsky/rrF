@@ -14,6 +14,22 @@
 #ifndef RRFDESCRIPTOR_H
 #define RRFDESCRIPTOR_H
 
+#include <vector>
+#include <stdio.h>
+
+#include "EvtGenBase/EvtVector4R.hh"
+
+class MomsVector {
+public:
+    MomsVector() {};
+    int size() { return moms.size();}
+    EvtVector4R &operator[](std::size_t idx) { return moms[idx];}
+    void add(EvtVector4R p) { moms.push_back(p);};
+private:
+    std::vector<EvtVector4R> moms;
+};
+
+
 class RrfDescriptor {
 public:
     RrfDescriptor();

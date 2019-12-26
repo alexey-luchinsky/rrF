@@ -14,10 +14,12 @@
 #include "EvtGenBase/EvtPDL.hh"
 #include "EvtGenBase/EvtId.hh"
 #include "EvtGenBase/EvtVector4R.hh"
+
+
 #include "cut.h"
 #include "RrfEvent.h"
 #include "RrfVar.h"
-
+#include "RrfDescriptor.h"
 
 using namespace TCLAP;
 using namespace std;
