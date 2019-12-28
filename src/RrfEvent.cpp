@@ -67,9 +67,11 @@ int RrfEvent::char_to_ind(char c) {
 }
 
 EvtVector4R RrfEvent::get_mom_from_i(int ind) {
-    EvtVector4R _p;
-   _p.set(fE[ind], fPx[ind], fPy[ind], fPz[ind]);
-   return _p;
+    if(ind<0 || ind >= moms.size()) {
+        cout << " Index " << ind << " is larger than [moms]=" << moms.size() << endl;
+        ::abort();
+    };
+    return moms[ind];
 }
 
 
@@ -90,5 +92,10 @@ EvtVector4R RrfEvent::get_mom_from_arg(string var, int start_pos, int end_pos) {
 
 
 bool RrfEvent::next() {
+    // adding all momenta to moms list
+    moms.clear();
+    for(int i=0; i<nTrk; ++i) {
+        moms.add(fE[i], fPx[i], fPy[i], fPz[i]);
+    }
     return true;
 }

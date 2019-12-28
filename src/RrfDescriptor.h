@@ -25,6 +25,8 @@ public:
     int size() { return moms.size();}
     EvtVector4R &operator[](std::size_t idx) { return moms[idx];}
     void add(EvtVector4R p) { moms.push_back(p);};
+    void add(double e, double px, double py, double pz) { moms.push_back(EvtVector4R(e, px, py, px));};
+    void clear() { moms.clear();}
 private:
     std::vector<EvtVector4R> moms;
 };

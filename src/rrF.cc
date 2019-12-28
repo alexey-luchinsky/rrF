@@ -216,6 +216,9 @@ void print_vec(std::string title, EvtVector4R k) {
 
 
 bool read_event(RrfEvent *event, TNtuple *tup, int iEv) {
+    if( !event->next()) {
+        return false;
+    };
     for (cut* c : cuts) {
         if (!c->is_ok(event)) {
             return false;
