@@ -5,7 +5,8 @@
  * Created on January 18, 2020, 11:12 AM
  */
 #include "segR.h"
-
+#include "EvtGenModels/EvtProbeModel.hh"
+#include "EvtGenBase/EvtModel.hh"
 
 using std::endl;
 using std::ofstream;
@@ -18,6 +19,9 @@ int main(int argc, char* argv[]) {
     TStopwatch timer;
     timer.Start();
 
+    EvtModel &modellist = EvtModel::instance();
+    modellist.registerModel(new EvtProbeModel());
+    
     segR gen(argc, argv);
     gen.run();
     

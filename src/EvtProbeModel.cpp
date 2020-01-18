@@ -47,7 +47,7 @@ EvtDecayBase* EvtProbeModel::clone(){
 }
 
 void EvtProbeModel::init(){
-
+    std::cout << "======== EVTPROBE MODEL =========" << std::endl;
   // check that there are 0 arguments
   checkNArg(0);
   checkNDaug(3);

@@ -22,6 +22,7 @@
 #include "EvtGenBase/EvtRandom.hh"
 #include "EvtGenBase/EvtRandomEngine.hh"
 #include "EvtGenBase/EvtReport.hh"
+#include "EvtGenModels/EvtModelReg.hh"
 
 /// use of external generators
 #if EVTGEN_EXTERNAL
