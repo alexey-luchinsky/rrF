@@ -47,3 +47,7 @@ target_link_libraries(rrF.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/li
 #adding sources for simpleEvtGenRO.exe
 add_executable (simpleEvtGenRO.exe "src/simpleEvtGenRO.cc" "src/a.for")
 target_link_libraries(simpleEvtGenRO.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC.a)
+
+#adding sources for segR_test.exe
+add_executable (segR_test.exe "src/segR_test.cc" "src/a.for")
+target_link_libraries(segR_test.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC.a)
