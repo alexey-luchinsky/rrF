@@ -48,6 +48,11 @@ target_link_libraries(rrF.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/li
 add_executable (simpleEvtGenRO.exe "src/simpleEvtGenRO.cc" "src/a.for")
 target_link_libraries(simpleEvtGenRO.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC.a)
 
+#adding sources for segR library
+add_library(segR "src/segR.cc")
+target_link_libraries(segR ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC.a)
+
+
 #adding sources for segR_test.exe
-add_executable (segR_test.exe "src/segR_test.cc" "src/a.for" "src/segR.cc" "src/EvtProbeModel.cpp")
-target_link_libraries(segR_test.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC.a)
+add_executable (segR_test.exe "src/segR_test.cc" "src/a.for"  "src/EvtProbeModel.cpp")
+target_link_libraries(segR_test.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/archive/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC.a segR)
