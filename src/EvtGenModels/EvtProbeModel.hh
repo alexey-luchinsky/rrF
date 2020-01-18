@@ -1,27 +1,44 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+//--------------------------------------------------------------------------
+//
+// Environment:
+//      This software is part of the EvtGen package developed jointly
+//      for the BaBar and CLEO collaborations.  If you use all or part
+//      of it, please give an appropriate acknowledgement.
+//
+// Copyright Information: See EvtGen/COPYRIGHT
+//      Copyright (C) 1998      Caltech, UCSB
+//
+// Module: EvtGen/EvtTaulnunu.hh
+//
+// Description:
+//
+// Modification history:
+//
+//    DJL/RYD     August 11, 1998         Module created
+//
+//------------------------------------------------------------------------
 
-/* 
- * File:   EvtProbeModel.hh
- * Author: luchinsky
- *
- * Created on January 18, 2020, 11:57 AM
- */
+#ifndef EVTPROBE_HH
+#define EVTPROBE_HH
 
-#ifndef EVTPROBEMODEL_HH
-#define EVTPROBEMODEL_HH
+#include "EvtGenBase/EvtDecayAmp.hh"
 
-class EvtProbeModel {
+class EvtParticle;
+
+class EvtProbeModel:public  EvtDecayAmp  {
+
 public:
-    EvtProbeModel();
-    EvtProbeModel(const EvtProbeModel& orig);
-    virtual ~EvtProbeModel();
-private:
+
+  EvtProbeModel() {}
+  virtual ~EvtProbeModel();
+
+  std::string getName();
+  EvtDecayBase* clone();
+
+  void initProbMax();
+  void init();
+  void decay(EvtParticle *p); 
 
 };
 
-#endif /* EVTPROBEMODEL_HH */
-
+#endif
