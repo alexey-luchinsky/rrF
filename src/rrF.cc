@@ -14,6 +14,9 @@
 #include "EvtGenBase/EvtPDL.hh"
 #include "EvtGenBase/EvtId.hh"
 #include "EvtGenBase/EvtVector4R.hh"
+#include "EvtGenBase/EvtParticleFactory.hh"
+#include "EvtGenBase/EvtParticle.hh"
+
 #include "cut.h"
 #include "RrfEvent.h"
 #include "RrfVar.h"
@@ -21,6 +24,13 @@
 
 using namespace TCLAP;
 using namespace std;
+
+
+
+
+// descriptor
+string descriptor_string;
+std::vector<int> desciptor_vec;
 
 // histogram parameters
 vector<RrfVar *> vars;
@@ -84,7 +94,7 @@ void add_var(string var) {
     // read var name
     if (vv.size() < 1) {
         cout << "WR0NG variable " << var << "!" << endl;
-    } else vars.push_back(varFactory(vv[0]));
+    } else vars.push_back(varFactory(vv[0], &desciptor_vec));
     // read nbins
     if (vv.size() < 2) {
         nbins_list.push_back(-1);
@@ -144,6 +154,8 @@ void read_args(int argc, char **argv) {
         cmd.add(save_hst_arg);
         ValueArg<int> nBins_arg("b", "bins", "Number of bins in the histogrm", false, 50, "int", cmd);
         MultiArg<string> cuts_arg("c", "cut", "cuts", false, "", cmd);
+        ValueArg<string> descriptor_arg("d", "descriptor", "decay descriptor", false, "", "string", cmd);
+
 
         cmd.parse(argc, argv);
         inFileName = inFileName_arg.getValue();
@@ -154,6 +166,9 @@ void read_args(int argc, char **argv) {
         nev = (int) nev_arg.getValue();
         evt_pdl_path = evt_pdl_path_arg.getValue();
 
+        // analyzing the descriptor       
+        descriptor_string = descriptor_arg.getValue();
+
         // reading the vars list
         read_hst_args(vars_arg.getValue());
 
@@ -163,10 +178,10 @@ void read_args(int argc, char **argv) {
             ReplaceStringInPlace(s, "&", ",");
             if (s.find(',') != string::npos) {
                 for (string v : split_string(s, ",")) {
-                    cuts.push_back(new cut(v));
+                    cuts.push_back(new cut(v, desciptor_vec));
                 }
             } else {
-                cuts.push_back(new cut(s));
+                cuts.push_back(new cut(s, desciptor_vec));
             };
         }
     } catch (ArgException &e) {
@@ -205,13 +220,12 @@ void read_args(int argc, char **argv) {
     for (cut *c : cuts) {
         cout << "|" << c->get_var() << "|" << endl;
     }
+    cout << "\t descriptor = " << descriptor_string << endl;
 }
-
 
 void print_vec(std::string title, EvtVector4R k) {
     cout << title << "=" << k << "; m = " << k.mass() << ";\n";
 }
-
 
 bool read_event(RrfEvent *event, TNtuple *tup, int iEv) {
     for (cut* c : cuts) {
@@ -232,8 +246,12 @@ int main(int argc, char **argv) {
     cout << "rrf.exe, (c) Alexey Luchinsky" << endl;
     read_args(argc, argv);
 
+
+
     EvtPDL pdl;
     pdl.read(evt_pdl_path.c_str());
+
+
 
     TFile *in_file = new TFile(inFileName.c_str(), "READ");
     RrfEvent *event = new RrfEvent;
@@ -251,6 +269,24 @@ int main(int argc, char **argv) {
     };
     fields.pop_back();
     TNtuple *tup = new TNtuple("tup", "tup", fields.c_str());
+
+    vector<string> ss = split_string(descriptor_string, " ");
+    EvtId evt_id;
+    for (string d : ss) {
+        if (d[0] == '^') {
+            evt_id = EvtPDL::getId(d.substr(1));
+            int id = EvtPDL::getStdHep(evt_id);
+            //            int id = 0;
+            desciptor_vec.push_back(id);
+        }
+    }
+    cout << " desciptor_vec = {";
+    for (int i : desciptor_vec) {
+        cout << " " << i;
+    }
+    cout << "}" << endl;
+
+
 
     int passed = 0;
     for (int iEv = 0; iEv < nEv; ++iEv) {
