@@ -58,38 +58,8 @@ extern "C" {
     extern float begran_(int *);
 }
 
-class segR {
-public:
-    segR(int argc, char *argv[]);
-    segR(const segR& orig);
-    virtual ~segR();
-    void run();
-private:
-    EvtStdHep evtstdhep;
-    EvtParticle *parent;
-    int seed = -1;
-    EvtGen *myGenerator;
-    EvtRandomEngine* myRandomEngine = 0;
-    EvtId PART;
-    int number = 10;
-    double val = -3.0969;
-    double P = 0.0;
-    double E = 0.0;
-    double mp = 0.938272;
-    double md = 1.875613;
-    double mtarg;
+void segR(int argc, char *argv[]);
 
-    Int_t ev = 0;
-    Int_t nLine[MAX], pdgID[MAX], nDau[MAX], nM1[MAX], nM2[MAX], nDF[MAX], nDL[MAX];
-    Double_t fPx[MAX], fPy[MAX], fPz[MAX], fE[MAX];
-    Double_t fVx[MAX], fVy[MAX], fVz[MAX], fT[MAX];
-    Double_t fTht[MAX], fM[MAX], fP[MAX], fPt[MAX];
-    Double_t prob;
-
-    Int_t nTrk = 0;
-    TTree *ntp;
-
-};
 
 #endif /* SEGR_H */
 

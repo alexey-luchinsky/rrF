@@ -22,8 +22,7 @@ int main(int argc, char* argv[]) {
     EvtModel &modellist = EvtModel::instance();
     modellist.registerModel(new EvtProbeModel());
     
-    segR gen(argc, argv);
-    gen.run();
+    segR(argc, argv);
     
     //out.close();
     timer.Stop();

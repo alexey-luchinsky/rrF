@@ -27,12 +27,34 @@ float begran_(int *) {
     return EvtRandom::Flat();
 }
 
+void segR(int argc, char *argv[]) {
 
-segR::segR(int argc, char *argv[]) {
+    EvtStdHep evtstdhep;
+    EvtParticle *parent;
+    int seed = -1;
+    EvtGen *myGenerator;
+    EvtRandomEngine* myRandomEngine = 0;
+    EvtId PART;
+    int number = 10;
+    double val = -3.0969;
+    double P = 0.0;
+    double E = 0.0;
+    double mp = 0.938272;
+    double md = 1.875613;
+    double mtarg;
+
+    Int_t ev = 0;
+    Int_t nLine[MAX], pdgID[MAX], nDau[MAX], nM1[MAX], nM2[MAX], nDF[MAX], nDL[MAX];
+    Double_t fPx[MAX], fPy[MAX], fPz[MAX], fE[MAX];
+    Double_t fVx[MAX], fVy[MAX], fVz[MAX], fT[MAX];
+    Double_t fTht[MAX], fM[MAX], fP[MAX], fPt[MAX];
+    Double_t prob;
+
+    Int_t nTrk = 0;
+    TTree *ntp;
+
     TStopwatch timer;
     timer.Start();
-
-
 
     if (argc < 3) {
         cout << "\nUSAGE: simpleEvtGenRO <particle> <dec-file> <# events> <pbar-mom/cms-energy> <rand seed>\n" << endl;
@@ -60,10 +82,8 @@ segR::segR(int argc, char *argv[]) {
     if (std::string(argv[1]) == "pbarpSystem" && argc < 5) {
         cout << "\n******  FATAL EVT_ERROR: <particle> is 'pbarpSystem'; MUST give pbar momentum or cms energy!\n\n" << endl;
         return;
-    }
-    else if (std::string(argv[1])!="pbarpSystem" && argc>=5)
-    {
-      cout <<"\n****** WARNING: overriding given momentum, setting cms energy to mass of "<<argv[1]<<".\n"<<endl;
+    } else if (std::string(argv[1]) != "pbarpSystem" && argc >= 5) {
+        cout << "\n****** WARNING: overriding given momentum, setting cms energy to mass of " << argv[1] << ".\n" << endl;
     }
 
     if (std::string(argv[1]) == "pbardSystem" && argc < 5) {
@@ -81,7 +101,7 @@ segR::segR(int argc, char *argv[]) {
     if (std::string(argv[1]) == "pbardSystem") mtarg = md;
 
 
-    
+
     if (argc >= 5)
         val = atof(argv[4]);
     else
@@ -100,7 +120,7 @@ segR::segR(int argc, char *argv[]) {
 
     P = 0;
     E = EvtPDL::getMass(PART);
-    
+
     cout << "\n\n############# Generating with following conditions:\n\n";
     cout << "particle       : '" << argv[1] << "'" << endl;
     cout << "decay file     : " << argv[2] << endl;
@@ -137,16 +157,7 @@ segR::segR(int argc, char *argv[]) {
     ntp->Branch("p", fP, "p[nTrk]/D");
     ntp->Branch("pt", fPt, "pt[nTrk]/D");
     ntp->Branch("tht", fTht, "tht[nTrk]/D");
-   
-}
 
-segR::segR(const segR& orig) {
-}
-
-segR::~segR() {
-}
-
-void segR::run() {
     // Loop to create nEvents, starting from an Upsilon(4S)
     int i, j;
     for (i = 0; i < number; i++) {
