@@ -12,22 +12,10 @@ using std::ofstream;
 using std::cout;
 
 
-//Define random number fcn used by Jetset
-extern "C" {
-    extern float rlu_();
-    extern float begran_(int *);
-}
 
-float rlu_() {
-    return EvtRandom::Flat();
-}
-
-float begran_(int *) {
-    return EvtRandom::Flat();
-}
 
 int main(int argc, char* argv[]) {
-
+    segR gen(argc, argv);
     TStopwatch timer;
     timer.Start();
 
