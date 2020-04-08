@@ -31,6 +31,7 @@ FIND_PATH(EVTGEN_LIBRARY_DIR NAMES libEvtGen.so PATHS
 Find_Path(EVTGENDATA NAMES evt.pdl PATHS
   ${SIMPATH}/share/EvtGen/
   /Users/luchinsky/Work/EvtGen/R01-06-00/
+ /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/R01-06-00/
 )
 
 If (NOT EVTGENDATA)
