@@ -35,6 +35,9 @@ Variables to be saved can be specified using argument **-v**. It's general forma
   * alternatively you can use var 'cos\_i\_j', where i and j are the
     number of particles. The result will be the cosine of the momenta
     of the corresponding particles in lab frame.
+  * the other variant is cos0\_i\_j, wich gives the cosine of the
+      polar angle of particles' set j in the restframe of set i with
+      respect with i's direction in root particle rest frame
 * part is the srting specifying system of particles. Every number in this string corresponds to the particle with this number in the decay file (zero stands for the decaying particle, see also the descriptor below). If the letter m is preceeding the number, the corresponding momentum is taken with minus sign. For example, in the case of "tau- to e- anti-nu-e nu_tau" decay variable "m2_12m3" is (pE+pnuE-pnuTau)^2.
 * nBins, min, max are requested number of bins, minimum and maximum values of the histogram
 
