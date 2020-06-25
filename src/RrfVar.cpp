@@ -96,11 +96,10 @@ float RrfVarCos::getValue(RrfEvent* event) {
 
 float RrfVarCos0::getValue(RrfEvent* event) {
     size_t pos2 = var.find("_", 6);
+    EvtVector4R k0 = event->get_mom_from_i(0, descriptor);
     EvtVector4R k1 = event->get_mom_from_arg(var, 5, pos2, descriptor);
     EvtVector4R k2 = event->get_mom_from_arg(var, pos2 + 1, var.length(), descriptor);
-    EvtVector4R k10 = k1;
-    k10.applyBoostTo(k2, true);
-    return cos_between(k2, k10);
+    return EvtDecayAngle(k0, k1, k2);
 }
 
 float RrfVarCth::getValue(RrfEvent* event) {
