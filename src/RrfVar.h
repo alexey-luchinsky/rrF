@@ -16,6 +16,7 @@
 
 
 #include "RrfEvent.h"
+#include "EvtGenBase/EvtKine.hh"
 using namespace std;
 
 class RrfVar {
