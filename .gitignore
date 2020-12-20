@@ -11,3 +11,4 @@ avg/
 backup/
 
 /build/
+cmake-build-debug
