@@ -48,9 +48,11 @@ RrfVar *varFactory(string str, std::vector<int> *descriptor) {
         return new RrfVarCth(str, descriptor);
      } else if (str == "prob") {
          return new RrfVarProb(str, descriptor);
-   } else {
-        cout << " varFactory: Unknown variable " << str << "!" << endl;
-        ::abort();
+   } else if (str == "nt") {
+        return new RrfVarNTracks(str, descriptor);
+    } else {
+            cout << " varFactory: Unknown variable " << str << "!" << endl;
+            ::abort();
     }
 }
 
@@ -109,4 +111,8 @@ float RrfVarCth::getValue(RrfEvent* event) {
 
 float RrfVarProb::getValue(RrfEvent* event) {
         return event->fProb;
+}
+
+float RrfVarNTracks::getValue(RrfEvent *event) {
+    return event->nTrk;
 }

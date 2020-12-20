@@ -109,6 +109,12 @@ public:
     float getValue(RrfEvent *event);
 };
 
+class RrfVarNTracks: public RrfVar {
+public:
+    RrfVarNTracks(string str, std::vector<int> *d): RrfVar(str, d) {};
+    float getValue(RrfEvent *event);
+};
+
 
 #endif /* RRFVAR_H */
 
