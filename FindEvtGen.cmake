@@ -14,15 +14,19 @@ MESSAGE(STATUS "Looking for EvtGen ...")
 FIND_PATH(EVTGEN_INCLUDE_DIR NAMES EvtGen/EvtGen.hh PATHS
   ${SIMPATH}/include/EvtGen
   /Users/luchinsky/Work/EvtGen/R01-06-00/
- /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/R01-06-00/
+  /Users/luchinsky/Work/dist/EvtGen/R01-06-00/
+  /Users/luchinsky/Work/EvtGen/evtgen/
+/afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/R01-06-00/
   NO_DEFAULT_PATH
 )
 
 
-FIND_PATH(EVTGEN_LIBRARY_DIR NAMES libEvtGen.so PATHS
+FIND_PATH(EVTGEN_LIBRARY_DIR NAMES libEvtGen.a PATHS
   ${SIMPATH}/lib
   /Users/luchinsky/Work/EvtGen/R01-06-00/lib/
- /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/R01-06-00/lib/
+  /Users/luchinsky/Work/dist/EvtGen/R01-06-00/lib/
+  /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/R01-06-00/lib/
+  /Users/luchinsky/Work/EvtGen/evtgen/build/lib
   NO_DEFAULT_PATH
 )
 
@@ -31,6 +35,7 @@ FIND_PATH(EVTGEN_LIBRARY_DIR NAMES libEvtGen.so PATHS
 Find_Path(EVTGENDATA NAMES evt.pdl PATHS
   ${SIMPATH}/share/EvtGen/
   /Users/luchinsky/Work/EvtGen/R01-06-00/
+  /Users/luchinsky/Work/dist/EvtGen/R01-06-00/
  /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/R01-06-00/
 )
 
