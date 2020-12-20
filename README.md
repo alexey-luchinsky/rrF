@@ -20,21 +20,28 @@ This tool is rather flexible and can be run with varios command line arguments. 
 
 Almost all arguments are self-explainable, so we will say some words about variables specification only.
 
-Variables to be saved can be specified using argument **-v**. Possible varianles can be divided into two
-classes:
+## Variables and Histograms
 
-  * event variables
-  * particle variables
+Variables to be saved are specified using argument **-v**. The general format of the expression is 
 
-The variables of the first class describe the event as a whole. The following options are available:
+  -v V(nBins:min:max)
+
+where V is the specification of the variable (see below), while nBins, min, max are requested number of bins, minimum and maximum values of the histogram.
+If any bin-specification parameter (or even all of them, including the parentheses) is absent the suitable default value will be used.
+
+Possible variables can be divided into two classes:
+
+  * event-specific variables
+  * particle-specific variables
+
+The variables of the first class describe the event as a whole. In the case the variable specification V could be one of the following:
 
 * prob: the probability of the event
 * nt: total number of tracks in the event. Note that this number has little to do with the multiplicity
-since the virstual particles are also counted. It can be used, however, to discriminated differemt channels
-from each other.
+since the virtual particles are also counted. It can be used, however, to discriminated different channels.
 
  
-The  general format of the particles-specific variables is var_part(nBins:min:max), where
+The  general format of the particles-specific variables is var_part, where
 
 * var is the name of the variable. Currently only the following variants are implemented:
   * "m" --- mass of the particles system 
@@ -53,9 +60,10 @@ The  general format of the particles-specific variables is var_part(nBins:min:ma
       polar angle of particles' set j in the restframe of set i with
       respect with i's direction in root particle rest frame
 * part is the srting specifying system of particles. Every number in this string corresponds to the particle with this number in the decay file (zero stands for the decaying particle, see also the descriptor below). If the letter m is preceeding the number, the corresponding momentum is taken with minus sign. For example, in the case of "tau- to e- anti-nu-e nu_tau" decay variable "m2_12m3" is (pE+pnuE-pnuTau)^2.
-* nBins, min, max are requested number of bins, minimum and maximum values of the histogram
 
-Several histograms can be saved either by giving "-v" arguments more than once, or in the list form like **-v "[m2_12, pT_3]"
+Several histograms can be saved either by giving "-v" arguments more than once, or in the list form like **-v "[m2_12, pT_3]"**
+
+## Cuts
 
 You can also impose some cuts on the listed above variables. This can be done by specifying -c (or --cuts) argument. For example,
 
