@@ -20,7 +20,21 @@ This tool is rather flexible and can be run with varios command line arguments. 
 
 Almost all arguments are self-explainable, so we will say some words about variables specification only.
 
-Variables to be saved can be specified using argument **-v**. It's general format is var_part(nBins:min:max), where
+Variables to be saved can be specified using argument **-v**. Possible varianles can be divided into two
+classes:
+
+  * event variables
+  * particle variables
+
+The variables of the first class describe the event as a whole. The following options are available:
+
+* prob: the probability of the event
+* nt: total number of tracks in the event. Note that this number has little to do with the multiplicity
+since the virstual particles are also counted. It can be used, however, to discriminated differemt channels
+from each other.
+
+ 
+The  general format of the particles-specific variables is var_part(nBins:min:max), where
 
 * var is the name of the variable. Currently only the following variants are implemented:
   * "m" --- mass of the particles system 
@@ -47,7 +61,9 @@ You can also impose some cuts on the listed above variables. This can be done by
 
     ./rrF.exe -v E_1 -c "E_2<0.3"
 
-means that the energy of the 2nd particle should be smaller than 0.3 GeV. The allowed operations are ">" and ">". All listed above variables can be used, but keep in mind that the variable should be on the left hand side of the comparison (i.e. "E_1<0.3" is OK, but "0.3>E_1" is wrong). You can combine (logical AND) several cuts by supplying several -c switches or by joining then with "&" operator. As a result,
+means that the energy of the 2nd particle should be smaller than 0.3 GeV. The allowed operations are ">", ">", and "=". 
+In the latter case the RHS can be specified with an error separated by "+-" symbols (with the default value being 1e-5).
+All listed above variables can be used, but keep in mind that the variable should be on the left hand side of the comparison (i.e. "E_1<0.3" is OK, but "0.3>E_1" is wrong). You can combine (logical AND) several cuts by supplying several -c switches or by joining then with "&" operator. As a result,
 
     ./rrF.exe -v E_1 -c "E_2<0.3" -c "E_2>0.1"
 
@@ -55,7 +71,10 @@ and
 
     ./rrF.exe -v E_1 -c "E_2<0.3 & E_2>0.1"
 
-will have the same effect.
+will have the same effect. The same result can be achieved with the more simple notation
+
+    ./rrF.exe -v E_1 -c "E_2=0.2+-0.1"
+
 
 If there are too many particles in the final state or you do not want to think about the order if the final particles in the decay file, you can specify the ones you are interested in using the desciptor. For example, if you run the command
 

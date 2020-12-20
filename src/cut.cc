@@ -41,6 +41,7 @@ cut::cut(std::string s, std::vector<int> d) {
     var = varFactory(args[0], &descriptor_vec);
     operation = args[1];
     value = atof(args[2].c_str());
+    error = 1e-5;
     if(operation == "=" && args[3]=="+-") {
         error = atof(args[4].c_str());
     }
