@@ -29,7 +29,7 @@ class rrFpy_pandas:
             self.load_ROOT(file_name)
         else:
             self.df_pivoted = pd.DataFrame()
-            self.filter = pd.Series(dtype = bool)
+            self._filter = pd.Series(dtype = bool)
             
             
     def load_ROOT(self, file_name):
@@ -45,9 +45,9 @@ class rrFpy_pandas:
         df["E"] = ak.to_pandas(ntp["E"].array())
         df["Id"] = ak.to_pandas(ntp["Id"].array())
         df = df.reset_index()
-        self.df_pivoted = pd.pivot_table(df, index = "entry", columns="subentry", values = ["px","py", "pz","E", "Id"])
-        self.df_pivoted["nTrk"] = ak.to_pandas(ntp["nTrk"].array())
-        self.filter = pd.Series(index=self.df_pivoted.index, data=True)
+        self._df_pivoted = pd.pivot_table(df, index = "entry", columns="subentry", values = ["px","py", "pz","E", "Id"])
+        self._df_pivoted["nTrk"] = ak.to_pandas(ntp["nTrk"].array())
+        self._filter = pd.Series(index=self._df_pivoted.index, data=True)
         file.close()
         
     def sign(self, x):
@@ -66,11 +66,11 @@ class rrFpy_pandas:
         Constructs new dataFrame with 'px', 'py', 'pz', 'E' fields polulated with components of 
         total momentum that corresponds to part_list
         """
-        df_res = pd.DataFrame(index=self.df_pivoted.index, columns = ["px","py","pz","E", "out"]).fillna(0)
+        df_res = pd.DataFrame(index=self._df_pivoted.index, columns = ["px","py","pz","E", "out"]).fillna(0)
         for i in part_list:
             abs_i = abs(i)
             for v in ["px","py","pz","E"]:
-                df_res[v] += self.sign(i)*self.df_pivoted[v,abs_i]
+                df_res[v] += self.sign(i)*self._df_pivoted[v,abs_i]
         return df_res
         
     def __getitem__(self, key):
@@ -79,15 +79,15 @@ class rrFpy_pandas:
         """
         if type(key) == str:   # extract one var as a Series
             if key == "ntr":
-                df_res = self.df_pivoted["nTrk"]
-                df_res = df_res[ self.filter]
+                df_res = self._df_pivoted["nTrk"]
+                df_res = df_res[ self._filter]
                 return df_res
             elif key == "reac":
                 df_res = self[["tex_%d" % i for i in range(self["ntr"].max())]]
                 df_res = df_res.apply(lambda r: 
                                       ("$"+r[0]+r"\to "+" ".join(r[1:])+"$").replace("???","")
                                       , axis=1)
-                df_res = df_res[ self.filter]
+                df_res = df_res[ self._filter]
                 return df_res
             name, part_list = self.parse_var(key)
             mom_functions_dict =  {'m2': lambda t, x, y, z: t**2-x**2-y**2-z**2,
@@ -97,24 +97,24 @@ class rrFpy_pandas:
             if name in mom_functions_dict.keys():
                 func =mom_functions_dict[name]
                 df_res = self.get_momDF_from_partList(part_list)
-                df_res = df_res[ self.filter]
+                df_res = df_res[ self._filter]
                 return func(df_res["E"], df_res["px"], df_res["py"], df_res["pz"])
             elif name == "id":
-                df_res = self.df_pivoted["Id", abs(part_list[0])]
-                df_res = df_res[ self.filter]
+                df_res = self._df_pivoted["Id", abs(part_list[0])]
+                df_res = df_res[ self._filter]
                 return df_res
             elif name == "name":
-                df_res = self.df_pivoted["Id",abs(part_list[0])]
+                df_res = self._df_pivoted["Id",abs(part_list[0])]
                 df_res = df_res.fillna("0").astype(int)
                 df_res = df_res.apply(lambda i: particles_names.get(i,"???"))
-                df_res = df_res[ self.filter]
+                df_res = df_res[ self._filter]
                 return df_res
             elif name == "tex":
-                df_res = self.df_pivoted["Id",abs(part_list[0])]
+                df_res = self._df_pivoted["Id",abs(part_list[0])]
                 df_res = df_res.fillna("0").astype(int)
                 df_res = df_res.apply(lambda i: particles_names.get(i,"???"))
                 df_res = df_res.apply(lambda n: tex_names.get(n,n))
-                df_res = df_res[ self.filter]
+                df_res = df_res[ self._filter]
                 return df_res
         elif type(key) == list:  # exctract many vars and DataFrame
             df_all =  pd.concat([self[k] for k in key], axis=1)
@@ -125,37 +125,43 @@ class rrFpy_pandas:
         """
         Resets all filters set by previous cuts
         """
-        self.filter = pd.Series(index=self.df_pivoted.index, data=True)
+        self._filter = pd.Series(index=self._df_pivoted.index, data=True)
 
     def cut(self, condition, in_place = False):
         """
         cut(condition): imposes a cut to the given dataset. Can be restored with reset_cuts
         """
-        new_filter = self.filter.copy()
+        new_filter = self._filter.copy()
         if type(condition) == str:
             condition = re.sub('([<>=])',r' \1 ', condition)
             var, operation, lhs = [s for s in condition.split(' ') if len(s)>0]
             if(operation == '>'):
                 lhs = float(lhs)
-                new_filter = self.filter & (self[var] > lhs) 
+                new_filter = self._filter & (self[var] > lhs) 
             elif operation == '<':
                 lhs = float(lhs)
-                new_filter = self.filter & (self[var] < lhs) 
+                new_filter = self._filter & (self[var] < lhs) 
             elif operation == '=':
                 if '+-' in lhs:
                     lhs, error = [float(n) for n in lhs.split('+-')]
                 else:
                     lhs = float(lhs)
                     error = 1e-3
-                new_filter = self.filter & \
+                new_filter = self._filter & \
                     (self[var] > lhs - error) & (self[var] < lhs + error)
             result = rrFpy_pandas(None)
-            result.df_pivoted = self.df_pivoted
-            result.filter = new_filter.copy()
+            result._df_pivoted = self._df_pivoted
+            result._filter = new_filter.copy()
         elif type(condition) == list:
             result = rrFpy_pandas(None)
-            result.df_pivoted = self.df_pivoted
-            result.filter = self.filter.copy()
+            result._df_pivoted = self._df_pivoted
+            result._filter = self._filter.copy()
             for c in condition:
                 result = result.cut(c)
+        return result
+
+    def filter(self, new_filter):
+        result = rrFpy_pandas(None)
+        result._df_pivoted = self._df_pivoted
+        result._filter = new_filter.copy()
         return result
