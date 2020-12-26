@@ -90,6 +90,13 @@ If there are too many particles in the final state or you do not want to think a
 
 where 0-th and 1-st momenta will correspond to momenta of e- and anti-nu_e respectively (the names of these oarticles are marked with ^ character, the momenta are numbered in acordance with the order of these enties). Identical particles currelntly are not processed correctly.
 
+# Python Interface
+
+If the size of the ROOT file produced by **simpleEvtGenRO.exe** is not very large, there is much more convenient interface to the same funcionality based on **python** and **jupyter** tools. The corresponding package and jupyter notebook that demostrates its usage are located in the **python/** directory. In order to run it you should install the required python packages with the command
+
+pip install numpy  pandas uproot awkward matplotlib plotly jupyter
+
+
 # Files and Installation
 
 Included files are:
