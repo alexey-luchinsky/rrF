@@ -4,11 +4,6 @@ import numpy as np
 import awkward as ak
 import re
 import pandas as pd
-from uproot3_methods.classes.TLorentzVector import TLorentzVector
-from tqdm.notebook import tqdm
-import pandas as pd
-import plotly.express as ps
-import plotly.graph_objects as go
 
 # loading evt.pdl file for particles' names
 particles_names = None
