@@ -14,3 +14,4 @@ env_rrF/
 /build/
 cmake-build-debug
 test2_env
+.#README.md
