@@ -4,7 +4,7 @@
 
 # Short Description
 
-Suppose we have generated some tau -> e anti-nu-e nu-tau decays running the command from build/ directory
+Suppose we have generated some tau -> e anti-nu-e nu-tau decays running the command from c++/build/ directory
 
     ./simpleEvtGenRO.exe tau- ../src/tau_enu.dec 100000
 
@@ -94,29 +94,31 @@ where 0-th and 1-st momenta will correspond to momenta of e- and anti-nu_e respe
 
 If the size of the ROOT file produced by **simpleEvtGenRO.exe** is not very large, there is much more convenient interface to the same funcionality based on **python** and **jupyter** tools. The corresponding package and jupyter notebook that demostrates its usage are located in the **python/** directory. In order to run it you should install the required python packages with the command
 
-pip install numpy  pandas uproot awkward matplotlib plotly jupyter
+    pip install numpy  pandas uproot awkward matplotlib plotly jupyter
 
 
 # Files and Installation
 
 Included files are:
 
-* src/rrF.cc --- source of the tool
-* src/cut.cc, src/cut.h --- class that decribes the cut on the variable
-* src/simpleEvtGenRo.cc --- file to produce ROOT,  taken from EvtGen distribution
-* src/a.for --- empty file needed to link with EvtGen
-* src/evt.pdl (required by simpleEvtGenRo) --- list of the particles,  taken from EvtGen distribution
-* src/tau_enu.dec --- sample decay file
-* Find*.cmake --- cmake scripts to find different packages
+
+* c++/src/rrF.cc --- source of the tool
+* c++/src/cut.cc, src/cut.h --- class that decribes the cut on the variable
+* c++/src/simpleEvtGenRo.cc --- file to produce ROOT,  taken from EvtGen distribution
+* c++/src/a.for --- empty file needed to link with EvtGen
+* c++/src/evt.pdl (required by simpleEvtGenRo) --- list of the particles,  taken from EvtGen distribution
+* c++/src/tau_enu.dec, c++/src/Bc.dec --- sample decay files
+* c++/Find*.cmake --- cmake scripts to find different packages
 
 
 
 Installation is pretty straightforward. You need to have ROOT, EvtGen, and HEPMC and TCLAP (http://tclap.sourceforge.net/) installed on your computer. After correcting the paths in Find*.cmake files do the following:
 
-**cd build/**
+    cd c++
+    mkdir build
+    cd build/
+    cmake ../
+    make
 
-**cmake ../**
-
-**make**
 
 

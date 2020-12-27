@@ -11,7 +11,7 @@ tex_names = {"B_c+":r"B_c^+", "pi+":r"\pi^+", "pi-":r"\pi^-", "pi0":r"\pi^0",
             "K+":r"K^+","K-":r"K^-",
             "J/psi":r"J/\psi",
             "tau-":r"\tau^-", "e-":"e^-", "nu_tau":r"\nu_\tau", "anti-nu_e":r"\bar{\nu}_e"}
-def load_evt_pdl(file_name = "../src/evt.pdl"):
+def load_evt_pdl(file_name = "../c++/src/evt.pdl"):
     global particles_names
     with open(file_name,"r") as file:
         evt_lines = file.readlines()
