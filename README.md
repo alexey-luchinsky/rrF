@@ -109,8 +109,10 @@ Included files are:
 * c++/src/evt.pdl (required by simpleEvtGenRo) --- list of the particles,  taken from EvtGen distribution
 * c++/src/tau_enu.dec, c++/src/Bc.dec --- sample decay files
 * c++/Find*.cmake --- cmake scripts to find different packages
-
-
+* python/rrfpy/rrfpy_pandas.py --- the python package
+* python/pandas_rrFpy.ipynb --- jupyter notebook with examples
+* COPYING, LICENSE --- License and copyleft information
+* README --- this file
 
 Installation is pretty straightforward. You need to have ROOT, EvtGen, and HEPMC and TCLAP (http://tclap.sourceforge.net/) installed on your computer. After correcting the paths in Find*.cmake files do the following:
 
@@ -120,5 +122,7 @@ Installation is pretty straightforward. You need to have ROOT, EvtGen, and HEPMC
     cmake ../
     make
 
+To use the python package you should install the required python packages with the command
 
+    pip install numpy  pandas uproot awkward matplotlib plotly jupyter
 
