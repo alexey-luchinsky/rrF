@@ -165,3 +165,6 @@ class rrFpy_pandas:
         result._df_pivoted = self._df_pivoted
         result._filter = new_filter.copy()
         return result
+    
+    def size(self):
+        return np.count_nonzero(self._filter)
