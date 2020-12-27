@@ -9,7 +9,8 @@ import pandas as pd
 particles_names = None
 tex_names = {"B_c+":r"B_c^+", "pi+":r"\pi^+", "pi-":r"\pi^-", "pi0":r"\pi^0",
             "K+":r"K^+","K-":r"K^-",
-            "J/psi":r"J/\psi"}
+            "J/psi":r"J/\psi",
+            "tau-":r"\tau^-", "e-":"e^-", "nu_tau":r"\nu_\tau", "anti-nu_e":r"\bar{\nu}_e"}
 def load_evt_pdl(file_name = "../src/evt.pdl"):
     global particles_names
     with open(file_name,"r") as file:
@@ -88,7 +89,11 @@ class rrFpy_pandas:
             mom_functions_dict =  {'m2': lambda t, x, y, z: t**2-x**2-y**2-z**2,
                 'm': lambda t, x, y, z: np.sqrt(t**2-x**2-y**2-z**2),
                 'pt2': lambda t, x, y, z: x**2+y**2,
-                 'pt': lambda t, x, y, z: np.sqrt(x**2+y**2)};
+                 'pt': lambda t, x, y, z: np.sqrt(x**2+y**2),
+                  'E': lambda t, x, y, z: t,
+                  'px': lambda t, x, y, z: x,
+                  'py': lambda t, x, y, z: y,
+                  'pz': lambda t, x, y, z: z};
             if name in mom_functions_dict.keys():
                 func =mom_functions_dict[name]
                 df_res = self.get_momDF_from_partList(part_list)
