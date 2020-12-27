@@ -53,14 +53,19 @@ class rrFpy_pandas:
         """
         file = up.open(file_name)
         ntp = file["ntp"]
-        df = pd.DataFrame(index = ak.to_pandas(ntp["pz"].array()).index, columns=["px", "py", "pz", "E", "Id"])
+        df = pd.DataFrame(index = ak.to_pandas(ntp["pz"].array()).index, columns=["px", "py", "pz", "E", \
+                                                                                  "Id", "nDau", "DF", "DL"])
         df["px"] = ak.to_pandas(ntp["px"].array())
         df["py"] = ak.to_pandas(ntp["py"].array())
         df["pz"] = ak.to_pandas(ntp["pz"].array())
         df["E"] = ak.to_pandas(ntp["E"].array())
-        df["Id"] = ak.to_pandas(ntp["Id"].array())
+        df["Id"] = ak.to_pandas(ntp["Id"].array()).astype(int)
+        df["nDau"] = ak.to_pandas(ntp["nDau"].array()).astype(int)
+        df["DF"] = ak.to_pandas(ntp["DF"].array()).astype(int)
+        df["DL"] = ak.to_pandas(ntp["DL"].array()).astype(int)
         df = df.reset_index()
-        self._df_pivoted = pd.pivot_table(df, index = "entry", columns="subentry", values = ["px","py", "pz","E", "Id"])
+        self._df_pivoted = pd.pivot_table(df, index = "entry", columns="subentry", values = ["px","py", "pz","E", \
+                                                                                             "Id", "nDau", "DF", "DL"])
         self._df_pivoted["nTrk"] = ak.to_pandas(ntp["nTrk"].array())
         self._filter = pd.Series(index=self._df_pivoted.index, data=True)
         file.close()
@@ -118,8 +123,8 @@ class rrFpy_pandas:
                 df_res = self.get_momDF_from_partList(part_list)
                 df_res = df_res[ self._filter]
                 return func(df_res["E"], df_res["px"], df_res["py"], df_res["pz"])
-            elif name == "id":
-                df_res = self._df_pivoted["Id", abs(part_list[0])]
+            elif name in ["id", "nDau", "DF", "DL"]:
+                df_res = self._df_pivoted[name, abs(part_list[0])]
                 df_res = df_res[ self._filter]
                 return df_res
             elif name == "name":
