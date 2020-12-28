@@ -30,6 +30,7 @@ tex_names = {"B_c+":r"B_c^+", "pi+":r"\pi^+", "pi-":r"\pi^-", "pi0":r"\pi^0",
             "K+":r"K^+","K-":r"K^-",
             "J/psi":r"J/\psi",
             "tau-":r"\tau^-", "e-":"e^-", "nu_tau":r"\nu_\tau", "anti-nu_e":r"\bar{\nu}_e"}
+
 def load_evt_pdl(file_name = "../c++/src/evt.pdl"):
     global particles_names
     with open(file_name,"r") as file:
@@ -198,6 +199,7 @@ class rrFpy_pandas:
         df = self._df_pivoted
         df = df[ self._filter]
         final_index = df["DF"][ df["DF"]<0].dropna(axis=1).columns
+        final_index = final_index.insert(0,0)
         # extracting only these columns
         cols = [(v,i) for v in ["px", "py", "pz", "E", "id"] for i in final_index]
         final_df = df[cols]
