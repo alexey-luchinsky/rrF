@@ -59,13 +59,13 @@ class rrFpy_pandas:
         df["py"] = ak.to_pandas(ntp["py"].array())
         df["pz"] = ak.to_pandas(ntp["pz"].array())
         df["E"] = ak.to_pandas(ntp["E"].array())
-        df["Id"] = ak.to_pandas(ntp["Id"].array()).astype(int)
-        df["nDau"] = ak.to_pandas(ntp["nDau"].array()).astype(int)
-        df["DF"] = ak.to_pandas(ntp["DF"].array()).astype(int)
-        df["DL"] = ak.to_pandas(ntp["DL"].array()).astype(int)
+        df["id"] = ak.to_pandas(ntp["Id"].array())
+        df["nDau"] = ak.to_pandas(ntp["nDau"].array())
+        df["DF"] = ak.to_pandas(ntp["DF"].array())
+        df["DL"] = ak.to_pandas(ntp["DL"].array())
         df = df.reset_index()
         self._df_pivoted = pd.pivot_table(df, index = "entry", columns="subentry", values = ["px","py", "pz","E", \
-                                                                                             "Id", "nDau", "DF", "DL"])
+                                                                                             "id", "nDau", "DF", "DL"])
         self._df_pivoted["nTrk"] = ak.to_pandas(ntp["nTrk"].array())
         self._filter = pd.Series(index=self._df_pivoted.index, data=True)
         file.close()
@@ -128,13 +128,13 @@ class rrFpy_pandas:
                 df_res = df_res[ self._filter]
                 return df_res
             elif name == "name":
-                df_res = self._df_pivoted["Id",abs(part_list[0])]
+                df_res = self._df_pivoted["id",abs(part_list[0])]
                 df_res = df_res.fillna("0").astype(int)
                 df_res = df_res.apply(lambda i: particles_names.get(i,"???"))
                 df_res = df_res[ self._filter]
                 return df_res
             elif name == "tex":
-                df_res = self._df_pivoted["Id",abs(part_list[0])]
+                df_res = self._df_pivoted["id",abs(part_list[0])]
                 df_res = df_res.fillna("0").astype(int)
                 df_res = df_res.apply(lambda i: particles_names.get(i,"???"))
                 df_res = df_res.apply(lambda n: tex_names.get(n,n))
@@ -192,3 +192,24 @@ class rrFpy_pandas:
     
     def size(self):
         return np.count_nonzero(self._filter)
+    
+    def remove_decayed(self):
+        # what particles are final (did not decay, DF<0)?
+        df = self._df_pivoted
+        df = df[ self._filter]
+        final_index = df["DF"][ df["DF"]<0].dropna(axis=1).columns
+        # extracting only these columns
+        cols = [(v,i) for v in ["px", "py", "pz", "E", "id"] for i in final_index]
+        final_df = df[cols]
+        # renaming the indeces (final momenta should be indexed 0,1,2,3,...)
+        idx = final_df.columns
+        lev0, lev1 = [i[0] for i in idx], [i[1] for i in idx]
+        dict_lev1 = {L:i for i, L in enumerate( np.unique(lev1))}
+        lev1 = [dict_lev1[L] for L in lev1]
+        new_idx = pd.MultiIndex.from_arrays([lev0, lev1])
+        # creating the new dataset with the renamed indexes
+        root_final = rrFpy_pandas()
+        root_final._df_pivoted = final_df.set_axis(new_idx, axis = 1, inplace=False).copy()
+        root_final.reset_cuts()
+        root_final._df_pivoted["nTrk"] = root_final._df_pivoted["id"].shape[1]
+        return root_final
