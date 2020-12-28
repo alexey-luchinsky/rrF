@@ -218,12 +218,12 @@ class rrFpy_pandas:
         root_final._df_pivoted["DL", 0] = len(final_index)-1
         return root_final
     
-    def PDT(self, iEv=0, i=0, offset=0, separator_char=' ', print_number=True, decay_char = "*"):
-        record =self._df_pivoted.iloc[iEv][["id","DF","DL"]]
+    def PDT(self, iEv=0, i=0, offset=0, separator_char=' ', print_number=True, decay_char = "->"):
+        record =self._df_pivoted[ self._filter].iloc[iEv][["id","DF","DL"]]
         self.PDT_(record, iEv=iEv, i=i, offset=offset, separator_char=separator_char, 
             print_number=print_number, decay_char=decay_char)
 
-    def PDT_(self, record, iEv=0, i=0, offset=0, separator_char=' ', print_number=True, decay_char = "*"):
+    def PDT_(self, record, iEv=0, i=0, offset=0, separator_char=' ', print_number=True, decay_char = "->"):
         pdgID = int(record["id", i])
         name = particles_names.get(pdgID, pdgID)
         df = int(record["DF", i])
