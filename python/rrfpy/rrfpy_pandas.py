@@ -201,7 +201,7 @@ class rrFpy_pandas:
         final_index = df["DF"][ df["DF"]<0].dropna(axis=1).columns
         final_index = final_index.insert(0,0)
         # extracting only these columns
-        cols = [(v,i) for v in ["px", "py", "pz", "E", "id"] for i in final_index]
+        cols = [(v,i) for v in ["px", "py", "pz", "E", "id","DF", "DL"] for i in final_index]
         final_df = df[cols]
         # renaming the indeces (final momenta should be indexed 0,1,2,3,...)
         idx = final_df.columns
@@ -214,4 +214,22 @@ class rrFpy_pandas:
         root_final._df_pivoted = final_df.set_axis(new_idx, axis = 1, inplace=False).copy()
         root_final.reset_cuts()
         root_final._df_pivoted["nTrk"] = root_final._df_pivoted["id"].shape[1]
+        root_final._df_pivoted["DF", 0] = 1
+        root_final._df_pivoted["DL", 0] = len(final_index)-1
         return root_final
+    
+    def PDT(self, iEv=0, i=0, offset=0, separator_char=' ', print_number=True, decay_char = "*"):
+        record =self._df_pivoted.iloc[iEv][["id","DF","DL"]]
+        self.PDT_(record, iEv=iEv, i=i, offset=offset, separator_char=separator_char, 
+            print_number=print_number, decay_char=decay_char)
+
+    def PDT_(self, record, iEv=0, i=0, offset=0, separator_char=' ', print_number=True, decay_char = "*"):
+        pdgID = int(record["id", i])
+        name = particles_names.get(pdgID, pdgID)
+        df = int(record["DF", i])
+        dl = int(record["DL", i])
+        print(i if print_number else "", "".join([separator_char]*offset), name, decay_char if df >=0 else "")
+        if df >=0:
+            for d in range(df, dl+1):
+                self.PDT_(record, iEv, d, offset+3, print_number=print_number, 
+                    separator_char=separator_char, decay_char=decay_char)
