@@ -6,7 +6,7 @@ attrs==20.3.0
 awkward==1.0.1
 awkward0==0.15.2
 backcall==0.2.0
-bleach==3.2.1
+bleach==3.3.0
 boost-histogram==0.11.1
 cachetools==4.2.0
 certifi==2020.12.5
