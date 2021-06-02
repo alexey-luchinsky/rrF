@@ -88,7 +88,7 @@ traitlets==5.0.5
 uproot==4.0.0
 uproot3==3.14.2
 uproot3-methods==0.10.0
-urllib3==1.26.2
+urllib3==1.26.5
 vector==0.0.0
 wcwidth==0.2.5
 webencodings==0.5.1
