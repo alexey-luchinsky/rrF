@@ -45,6 +45,8 @@ vector<cut*> cuts;
 string inFileName, outFileName;
 int nev;
 bool print_ids;
+int max_daug_number;
+
 
 // input file fields
 int nBins;
@@ -145,7 +147,7 @@ void read_args(int argc, char **argv) {
         ValueArg<string> inFileName_arg("i", "in", "input ROOT file", false, "evtOutput.root", "string", cmd);
         ValueArg<string> outFileName_arg("o", "out", "output ROOT file", false, "out.root", "string", cmd);
         MultiArg<string> vars_arg("v", "var", "variable to be saved, e.g. m2_12. "
-                "You can also specify number of bins, min and max values like m2_12(10, 1.2, 2.9)", true, "string", cmd);
+                "You can also specify number of bins, min and max values like m2_12(10, 1.2, 2.9)", false, "string", cmd);
         ValueArg<string> evt_pdl_path_arg("e", "evt_pdl", "evt.pdl file", false, "evt.pdl", "string", cmd);
         ValueArg<float> nev_arg("n", "nev", "Number of events to be read (negative if all events should be read)", false, -1, "float", cmd);
         SwitchArg print_ids_arg("p", "print-ids", "should we print ids of the particles", false);
@@ -155,6 +157,8 @@ void read_args(int argc, char **argv) {
         ValueArg<int> nBins_arg("b", "bins", "Number of bins in the histogrm", false, 50, "int", cmd);
         MultiArg<string> cuts_arg("c", "cut", "cuts", false, "", cmd);
         ValueArg<string> descriptor_arg("d", "descriptor", "decay descriptor", false, "", "string", cmd);
+        ValueArg<int> all_mass_arg("a", "all_mass", "add all mass pairs to variables, argument is the max daughter number", false, 0, "int", cmd);
+        
 
 
         cmd.parse(argc, argv);
@@ -171,6 +175,20 @@ void read_args(int argc, char **argv) {
 
         // reading the vars list
         read_hst_args(vars_arg.getValue());
+        max_daug_number = all_mass_arg.getValue();
+        if(max_daug_number>1) 
+        {
+          for(int i1=1; i1<=max_daug_number; ++i1) 
+          {
+            for(int i2=i1+1; i2<=max_daug_number; ++i2) 
+            {
+              add_var("m_"+std::to_string(i1)+std::to_string(i2));
+            }
+          }
+          
+        };
+        
+        
 
         // reading cuts
         vector<string> cuts_string = cuts_arg.getValue();
@@ -191,6 +209,7 @@ void read_args(int argc, char **argv) {
     cout << " Running with: " << endl;
     cout << "\t inFileName=" << inFileName << endl;
     cout << "\t outFileName=" << outFileName << endl;
+    cout << "\t max_daug_number=" << max_daug_number << endl;
     cout << "\t vars = [";
     for (int i = 0; i < vars.size(); ++i) {
         cout << vars[i] << " ";

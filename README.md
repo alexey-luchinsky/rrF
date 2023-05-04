@@ -43,6 +43,12 @@ Variables to be saved can be specified using argument **-v**. It's general forma
 
 Several histograms can be saved either by giving "-v" arguments more than once, or in the list form like **-v "[m2_12, pT_3]"
 
+You can also ask to generate histograms of all daughters' pairs by using the **-a** argument. The number after it will show tha maximum daughter, so that command
+
+    ./rrF -a 3
+
+will give you histograms over m_12, m_13, m_23. Note that no check on actual number of daughters is performed, to it is you responsibility not to ask for too much histograms. For example, you should not use **-a 4** for tau -> e nu nu decay.
+
 You can also impose some cuts on the listed above variables. This can be done by specifying -c (or --cuts) argument. For example,
 
     ./rrF.exe -v E_1 -c "E_2<0.3"
