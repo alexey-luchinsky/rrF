@@ -14,6 +14,7 @@ MESSAGE(STATUS "Looking for HepMC ...")
 FIND_PATH(HEPMC_INCLUDE_DIR NAMES HepMC/HepMCDefs.h PATHS
   /Users/luchinsky/Work/EvtGen/external/HepMC/include/			    
  /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/external/HepMC/include/
+  /usr/local/include/
   NO_DEFAULT_PATH
 )
 
@@ -21,6 +22,7 @@ FIND_PATH(HEPMC_INCLUDE_DIR NAMES HepMC/HepMCDefs.h PATHS
 FIND_PATH(HEPMC_LIBRARY_DIR NAMES libHepMC.a PATHS
   ${SIMPATH}/lib
   /Users/luchinsky/Work/EvtGen/external/HepMC/lib/
+  /usr/local/lib
  /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/external/HepMC/lib/
   NO_DEFAULT_PATH
 )

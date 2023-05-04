@@ -1,0 +1,17 @@
+noPhotos
+
+Decay chi_c2
+0.195000000 gamma   J/psi                                   PHSP; #[Reconstructed PDG2011]
+Enddecay
+
+Decay J/psi
+0.059400000 e+      e-                                      PHOTOS   VLL; #[Reconstructed PDG2011]
+0.005600000 rho0    pi0                                     PARTWAVE 0.0 0.0 1.0 0.0 0.0 0.0; #[Reconstructed PDG2011]
+Enddecay
+
+Decay rho0
+1.000    pi+ pi-                         VSS;
+Enddecay
+
+
+End

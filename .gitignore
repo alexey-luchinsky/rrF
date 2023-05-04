@@ -9,5 +9,9 @@ kks_main.cpp
 avg/
 *.txt
 backup/
+env_rrF/
 
 /build/
+cmake-build-debug
+test2_env
+.#README.md
