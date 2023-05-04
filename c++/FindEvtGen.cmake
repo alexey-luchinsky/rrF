@@ -27,6 +27,7 @@ FIND_PATH(EVTGEN_LIBRARY_DIR NAMES libEvtGen.a PATHS
   /Users/luchinsky/Work/dist/EvtGen/R01-06-00/lib/
   /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/R01-06-00/lib/
   /Users/luchinsky/Work/EvtGen/evtgen/build/lib
+  /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/R01-06-00/lib/archive/
   NO_DEFAULT_PATH
 )
 
