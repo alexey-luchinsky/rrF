@@ -11,7 +11,7 @@ avg/
 backup/
 env_rrF/
 
-/build/
+build/
 cmake-build-debug
 test2_env
 .#README.md

@@ -15,6 +15,7 @@ FIND_PATH(HEPMC_INCLUDE_DIR NAMES HepMC/HepMCDefs.h PATHS
   /Users/luchinsky/Work/EvtGen/external/HepMC/include/			    
  /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/external/HepMC/include/
   /usr/local/include/
+  /Users/alekseiluchinsky/miniconda3/include
   NO_DEFAULT_PATH
 )
 
@@ -24,15 +25,13 @@ FIND_PATH(HEPMC_LIBRARY_DIR NAMES libHepMC.a PATHS
   /Users/luchinsky/Work/EvtGen/external/HepMC/lib/
   /usr/local/lib
  /afs/cern.ch/user/a/aluchins/EvtGen/EvtGen/external/HepMC/lib/
+ /Users/alekseiluchinsky/miniconda3/lib
   NO_DEFAULT_PATH
 )
 
 
 
 
-If (NOT HEPMCDATA)
-  Message(STATUS "Could not find EvtGen data files")
-EndIf()
 
 if (HEPMC_INCLUDE_DIR AND HEPMC_LIBRARY_DIR)
    set(HEPMC_FOUND TRUE)

@@ -69,8 +69,8 @@ IF (ROOT_CONFIG_EXECUTABLE)
   ENDIF (found_root_major_vers LESS 5)
 
   # compute an overall version number which can be compared at once
-  MATH(EXPR req_vers "${req_root_major_vers}*10000 + ${req_root_minor_vers}*100 + ${req_root_patch_vers}")
-  MATH(EXPR found_vers "${found_root_major_vers}*10000 + ${found_root_minor_vers}*100 + ${found_root_patch_vers}")
+  # MATH(EXPR req_vers "${req_root_major_vers}*10000 + ${req_root_minor_vers}*100 + ${req_root_patch_vers}")
+  # MATH(EXPR found_vers "${found_root_major_vers}*10000 + ${found_root_minor_vers}*100 + ${found_root_patch_vers}")
    
   IF (found_vers LESS req_vers)
     SET(ROOT_FOUND FALSE)

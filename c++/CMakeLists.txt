@@ -27,6 +27,9 @@ SET_COMPILE_FLAG(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}"
 
 
 
+
+set(CMAKE_CXX_STANDARD 17)
+
 include_directories(~/local/include)
 
 
@@ -46,13 +49,13 @@ target_link_libraries(rrF.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/libEvtGen.
 
 #adding sources for simpleEvtGenRO.exe
 add_executable (simpleEvtGenRO.exe "src/simpleEvtGenRO.cc" "src/a.for")
-target_link_libraries(simpleEvtGenRO.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC.a)
+target_link_libraries(simpleEvtGenRO.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC3-static.a)
 
 #adding sources for segR library
 add_library(segR "src/segR.cc")
-target_link_libraries(segR ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC.a)
+target_link_libraries(segR ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC3-static.a)
 
 
 #adding sources for segR_test.exe
 add_executable (segR_test.exe "src/segR_test.cc" "src/a.for"  "src/EvtProbeModel.cpp")
-target_link_libraries(segR_test.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC.a segR)
+target_link_libraries(segR_test.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC3-static.a segR)
