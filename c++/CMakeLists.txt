@@ -58,4 +58,4 @@ target_link_libraries(segR ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/libEvtGen.a $
 
 #adding sources for segR_test.exe
 add_executable (segR_test.exe "src/segR_test.cc" "src/a.for"  "src/EvtProbeModel.cpp")
-target_link_libraries(segR_test.exe ${ROOT_LIBRARIES} ${EVTGEN_LIBRARY_DIR}/libEvtGen.a ${HEPMC_LIBRARY_DIR}/libHepMC3-static.a segR)
+target_link_libraries(segR_test.exe  segR)
